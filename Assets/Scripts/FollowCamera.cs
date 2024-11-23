@@ -8,9 +8,6 @@ public class FollowCamera : MonoBehaviour {
 
     void Awake() {
         camera = gameObject.GetComponent<Camera>();
-
-        if (!camera || !target)
-            enabled = false;
     }
 
     void Update() {

@@ -9,9 +9,6 @@ public class Roller : MonoBehaviour {
 
     void Awake() {
         rigidbody = target.GetComponent<Rigidbody>();
-
-        if (!target || !rigidbody)
-            enabled = false;
     }
 
     void Update() {
