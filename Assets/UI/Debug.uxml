@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Debug.uss?fileID=7433441132597879392&amp;guid=60e502bd8f3eecc4abd0a75b5f160546&amp;type=3#Debug" />
-    <ui:VisualElement name="div" style="flex-grow: 1; height: auto; width: auto;">
-        <ui:Label tabindex="-1" text="Log:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="debug" class="log" style="-unity-text-outline-width: 0.5px; font-size: 32px; -unity-text-outline-color: rgb(0, 0, 0);" />
+    <Style src="project://database/Assets/UI/Debug.uss?fileID=7433441132597879392&amp;guid=60e502bd8f3eecc4abd0a75b5f160546&amp;type=3#Debug" />
+    <ui:VisualElement name="div" style="height: auto; width: auto; flex-direction: row;">
+        <ui:Label tabindex="-1" text="(現在状態)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="state" class="log" style="flex-direction: column; width: 200px;" />
+        <ui:Label tabindex="-1" text="Log:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="debug" class="log" />
     </ui:VisualElement>
 </ui:UXML>

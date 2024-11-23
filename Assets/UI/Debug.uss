@@ -1,5 +1,7 @@
 .log {
     -unity-font-style: normal;
-    color: rgb(255, 255, 255);
-    font-size: 20px;
+    color: rgb(0, 0, 0);
+    font-size: 32px;
+    -unity-text-outline-width: 0;
+    -unity-text-outline-color: rgb(255, 255, 255);
 }
