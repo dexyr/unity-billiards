@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour {
     public enum Group { NONE, SOLID, STRIPE, EIGHT };
-    static Color purple = new Color(0.2f, 0f, 0.8f);
+    static Color purple = new Color(0.5f, 0f, 0.5f);
     static Color orange = new Color(1f, 0.4f, 0f);
-    static Color maroon = new Color(0.8f, 0f, 0f);
+    static Color maroon = new Color(0.7f, 0f, 0f);
 
     static Color[] colors = {
         Color.yellow,
@@ -24,10 +24,9 @@ public class Ball : MonoBehaviour {
         maroon
     };
 
-    // ‚±‚±‚Éfield‚ª•K—v
     [field: SerializeField] public int number { get; private set; }
 
-    void Awake() {
+    void Start() {
         var material = GetComponent<Renderer>().material;
 
         if (number < 1 || number > 15) {
@@ -35,7 +34,7 @@ public class Ball : MonoBehaviour {
             return;
         }
 
-        material.color = colors[number + 1];
+        material.color = colors[number - 1];
     }
 
     static public Group GetGroup(int number) {

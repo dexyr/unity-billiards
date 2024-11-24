@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cue Ball
+  - Ball Spawn
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Cue Stick
   - Water
   - UI
   - 
