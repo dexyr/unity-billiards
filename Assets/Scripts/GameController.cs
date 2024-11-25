@@ -10,8 +10,6 @@ public class GameController : MonoBehaviour {
     public delegate void StateChangeHandler(State state);
     public event StateChangeHandler StateChanged;
 
-    [SerializeField] CueStick stick;
-
     [SerializeField] GameObject ballSetPrefab;
     List<GameObject> balls = new List<GameObject>();
 
@@ -34,16 +32,6 @@ public class GameController : MonoBehaviour {
         ChangeState(State.SHOT);
     }
 
-    public void Update() {
-        // デバッグ用
-
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            stick.enabled = true;
-            stick.GetComponentInChildren<CapsuleCollider>().enabled = true;
-            stick.ResetAim();
-        }
-    }
-
     void FreezeBalls() {
         foreach (var b in balls) {
             var rigidBody = b.GetComponent<Rigidbody>();
@@ -51,8 +39,8 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void StickCollided(CueStick stick) {
-        stick.enabled = false;
+    public void StickCollided() {
+        Debug.Log("stick hit");
     }
 
     public void CueBallCollided(Ball ball) {
