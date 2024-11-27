@@ -1126,8 +1126,8 @@ Light:
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05
-    m_NormalBias: 0
-    m_NearPlane: 0.1
+    m_NormalBias: 0.4
+    m_NearPlane: 1
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -1721,18 +1721,6 @@ PrefabInstance:
     - target: {fileID: 1279587387311425508, guid: cfc0031e9a46fd545bc36b2b6e60f3f6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7472636902800687814, guid: cfc0031e9a46fd545bc36b2b6e60f3f6, type: 3}
-      propertyPath: m_Drag
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7472636902800687814, guid: cfc0031e9a46fd545bc36b2b6e60f3f6, type: 3}
-      propertyPath: m_AngularDrag
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7472636902800687814, guid: cfc0031e9a46fd545bc36b2b6e60f3f6, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7893933516857709951, guid: cfc0031e9a46fd545bc36b2b6e60f3f6, type: 3}
       propertyPath: m_Name

@@ -30,6 +30,9 @@ public class GameController : MonoBehaviour {
             balls.Add(b.gameObject);
 
         ChangeState(State.SHOT);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void FreezeBalls() {
