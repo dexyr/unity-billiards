@@ -3,11 +3,13 @@ using UnityEngine;
 public class CueStick : MonoBehaviour {
     GameController gameController;
     CueStickController cueStickController;
+    [SerializeField] DebugUI debugUI;
 
-    public delegate void StickCollisionHandler();
+    public delegate void StickCollisionHandler(float hitVelocity);
     public event StickCollisionHandler StickCollided;
 
     CapsuleCollider capsuleCollider;
+    BoxCollider boxCollider;
     Vector3 originalPosition;
     Vector3 originalRotation;
 
@@ -21,8 +23,10 @@ public class CueStick : MonoBehaviour {
 
         StickCollided += gameController.StickCollided;
         StickCollided += cueStickController.StickCollided;
+        StickCollided += debugUI.UpdateHitVelocity;
 
         capsuleCollider = GetComponent<CapsuleCollider>();
+        boxCollider = GetComponent<BoxCollider>();
 
         originalPosition = transform.localPosition;
         originalRotation = transform.localEulerAngles;
@@ -31,11 +35,13 @@ public class CueStick : MonoBehaviour {
     void OnDestroy() {
         StickCollided -= gameController.StickCollided;
         StickCollided -= cueStickController.StickCollided;
+        StickCollided -= debugUI.UpdateHitVelocity;
     }
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
             capsuleCollider.enabled = true;
+            boxCollider.enabled = true;
             GetComponent<Rigidbody>().isKinematic = false;
         }
     }
@@ -44,12 +50,15 @@ public class CueStick : MonoBehaviour {
         var cueBall = collision.gameObject.GetComponent<CueBall>();
 
         if (cueBall) {
+            Debug.Log("hit");
+            Debug.Log(collision.relativeVelocity.magnitude);
             Debug.Log(collision.relativeVelocity);
 
             capsuleCollider.enabled = false;
+            boxCollider.enabled = false;
             GetComponent<Rigidbody>().isKinematic = true;
 
-            StickCollided?.Invoke();
+            StickCollided?.Invoke(collision.relativeVelocity.magnitude);
         }
     }
 

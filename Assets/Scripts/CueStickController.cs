@@ -68,16 +68,13 @@ public class CueStickController : MonoBehaviour {
         if (rigidbody.isKinematic)
             return;
 
-        if (stickSlide == 0)
-            rigidbody.velocity *= 0.5f;
-
         if (rigidbody.velocity.magnitude < 0.01f)
             rigidbody.velocity = Vector3.zero;
 
         rigidbody.AddRelativeForce(new Vector3(0, stickSlide, 0), ForceMode.Impulse);
     }
 
-    public void StickCollided() {
+    public void StickCollided(float velocity) {
         ResetAim();
     }
 
@@ -88,7 +85,9 @@ public class CueStickController : MonoBehaviour {
     }
 
     void Shot() {
-        float z = Input.GetAxis("Mouse Y") * sensitivity / 2;
+        var rigidbody = cueStick.GetComponent<Rigidbody>();
+
+        float z = Input.GetAxis("Mouse Y") * sensitivity * rigidbody.mass;
         stickSlide = z;
         
         // stickSlide += z;

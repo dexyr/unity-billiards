@@ -39,8 +39,7 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public void StickCollided() {
-        Debug.Log("stick hit");
+    public void StickCollided(float velocity) {
     }
 
     public void CueBallCollided(Ball ball) {

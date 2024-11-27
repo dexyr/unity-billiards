@@ -2,8 +2,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DebugUI : MonoBehaviour {
+    [SerializeField] CueStick cueStick;
+
     GameController gameController;
     Label debug, state;
+    Slider velocity, hitVelocity;
 
     void Awake() {
         var controllerObject = GameObject.FindGameObjectWithTag("GameController");
@@ -15,6 +18,8 @@ public class DebugUI : MonoBehaviour {
         var uiDocument = GetComponent<UIDocument>();
         debug = (Label) uiDocument.rootVisualElement.Query("debug");
         state = (Label) uiDocument.rootVisualElement.Query("state");
+        velocity = (Slider) uiDocument.rootVisualElement.Query("velocity");
+        hitVelocity = (Slider) uiDocument.rootVisualElement.Query("hit-velocity");
     }
 
     public void OnDestroy() {
@@ -22,6 +27,14 @@ public class DebugUI : MonoBehaviour {
             gameController.LogUpdated -= UpdateLogText;
             gameController.StateChanged -= UpdateStateText;
         }
+    }
+
+    public void Update() {
+        velocity.value = cueStick.GetComponent<Rigidbody>().velocity.magnitude;
+    }
+
+    public void UpdateHitVelocity(float velocity) {
+        hitVelocity.value = velocity;
     }
 
     public void UpdateLogText(string message) {
