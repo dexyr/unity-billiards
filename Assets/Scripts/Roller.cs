@@ -5,7 +5,7 @@ using UnityEngine;
 public class Roller : MonoBehaviour {
     [SerializeField] GameObject target;
     [SerializeField] float speed;
-    Rigidbody rigidbody;
+    new Rigidbody rigidbody;
 
     void Awake() {
         rigidbody = target.GetComponent<Rigidbody>();

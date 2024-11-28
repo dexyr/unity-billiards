@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour {
     [SerializeField] GameObject target;
-    Camera camera;
+    new Camera camera;
 
     void Awake() {
         camera = gameObject.GetComponent<Camera>();

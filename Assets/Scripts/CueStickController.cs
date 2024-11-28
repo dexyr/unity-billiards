@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CueStickController : MonoBehaviour {
     [SerializeField] GameObject target;
-    [SerializeField] GameObject camera;
+    [SerializeField] new GameObject camera;
     [SerializeField] float sensitivity = 2;
 
     CueStick cueStick;

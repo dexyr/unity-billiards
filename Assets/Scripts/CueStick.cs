@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public class CueStick : MonoBehaviour {
-    GameController gameController;
     CueStickController cueStickController;
     [SerializeField] DebugUI debugUI;
 
@@ -10,6 +9,7 @@ public class CueStick : MonoBehaviour {
 
     CapsuleCollider capsuleCollider;
     BoxCollider boxCollider;
+    new Rigidbody rigidbody;
     Vector3 originalPosition;
     Vector3 originalRotation;
 
@@ -17,33 +17,23 @@ public class CueStick : MonoBehaviour {
 
     void Awake() {
         var controllerObject = GameObject.FindGameObjectWithTag("GameController");
-        gameController = controllerObject.GetComponent<GameController>();
 
         cueStickController = GetComponentInParent<CueStickController>();
 
-        StickCollided += gameController.StickCollided;
         StickCollided += cueStickController.StickCollided;
         StickCollided += debugUI.UpdateHitVelocity;
 
         capsuleCollider = GetComponent<CapsuleCollider>();
         boxCollider = GetComponent<BoxCollider>();
+        rigidbody = GetComponent<Rigidbody>();
 
         originalPosition = transform.localPosition;
         originalRotation = transform.localEulerAngles;
     }
 
     void OnDestroy() {
-        StickCollided -= gameController.StickCollided;
         StickCollided -= cueStickController.StickCollided;
         StickCollided -= debugUI.UpdateHitVelocity;
-    }
-
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            capsuleCollider.enabled = true;
-            boxCollider.enabled = true;
-            GetComponent<Rigidbody>().isKinematic = false;
-        }
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -56,10 +46,16 @@ public class CueStick : MonoBehaviour {
 
             capsuleCollider.enabled = false;
             boxCollider.enabled = false;
-            GetComponent<Rigidbody>().isKinematic = true;
+            rigidbody.isKinematic = true;
 
             StickCollided?.Invoke(collision.relativeVelocity.magnitude);
         }
+    }
+
+    public void Enable() {
+        capsuleCollider.enabled = true;
+        boxCollider.enabled = true;
+        rigidbody.isKinematic = false;
     }
 
     public void ResetPosition() {
