@@ -1,9 +1,6 @@
 using UnityEngine;
 
 public class CueStick : MonoBehaviour {
-    CueStickController cueStickController;
-    [SerializeField] DebugUI debugUI;
-
     public delegate void StickCollisionHandler(float hitVelocity);
     public event StickCollisionHandler StickCollided;
 
@@ -16,24 +13,12 @@ public class CueStick : MonoBehaviour {
     // Žè“®‚É‘¬“x‚ðŒvŽZ‚·‚é
 
     void Awake() {
-        var controllerObject = GameObject.FindGameObjectWithTag("GameController");
-
-        cueStickController = GetComponentInParent<CueStickController>();
-
-        StickCollided += cueStickController.StickCollided;
-        StickCollided += debugUI.UpdateHitVelocity;
-
         capsuleCollider = GetComponent<CapsuleCollider>();
         boxCollider = GetComponent<BoxCollider>();
         rigidbody = GetComponent<Rigidbody>();
 
         originalPosition = transform.localPosition;
         originalRotation = transform.localEulerAngles;
-    }
-
-    void OnDestroy() {
-        StickCollided -= cueStickController.StickCollided;
-        StickCollided -= debugUI.UpdateHitVelocity;
     }
 
     void OnCollisionEnter(Collision collision) {

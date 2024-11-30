@@ -25,6 +25,12 @@ public class CueStickController : MonoBehaviour {
     void Awake() {
         transform.localEulerAngles = new Vector3((angleMax + angleMin) / 2, 0, 0);
         cueStick = GetComponentInChildren<CueStick>();
+
+        cueStick.StickCollided += StickCollided;
+    }
+
+    void OnDestroy() {
+        cueStick.StickCollided -= StickCollided;
     }
 
     void Update() {

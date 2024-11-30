@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4908605137256930987}
   - component: {fileID: 4997621911885339170}
   - component: {fileID: 7441289867784421014}
+  - component: {fileID: -919492856820845449}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Cue Ball
@@ -147,3 +148,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <number>k__BackingField: 0
+--- !u!114 &-919492856820845449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8910125714074373841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7f8eb7774108674785392231f832b19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
