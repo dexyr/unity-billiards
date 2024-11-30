@@ -7,10 +7,12 @@
     <ui:VisualElement name="VisualElement" style="flex-grow: initial; height: auto;">
         <ui:VisualElement style="height: auto; width: auto; flex-direction: row;">
             <ui:Label tabindex="-1" text="動いているボール" parse-escape-sequences="true" display-tooltip-when-elided="true" name="balls" class="log" />
+            <ui:Label tabindex="-1" text="クッション" parse-escape-sequences="true" display-tooltip-when-elided="true" name="pocketed" class="log" />
+            <ui:Label tabindex="-1" text="ブレイク" parse-escape-sequences="true" display-tooltip-when-elided="true" name="break" class="log" />
             <ui:Label tabindex="-1" text="プレヤー" parse-escape-sequences="true" display-tooltip-when-elided="true" name="turn" class="log" />
             <ui:Label tabindex="-1" text="(現在状態)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="state" class="log" style="flex-direction: column; width: 200px;" />
             <ui:Label tabindex="-1" text="ソリッド" parse-escape-sequences="true" display-tooltip-when-elided="true" name="solids" class="log" />
         </ui:VisualElement>
-        <ui:Label tabindex="-1" text="Log:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="debug" class="log" />
+        <ui:Label tabindex="-1" text="Log:" parse-escape-sequences="true" display-tooltip-when-elided="true" name="debug" class="log" style="visibility: hidden;" />
     </ui:VisualElement>
 </ui:UXML>

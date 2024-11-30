@@ -16,16 +16,17 @@ public class GameController : MonoBehaviour {
 
     CueStick stick;
     CueBall cueBall;
+    Camera shotCamera;
     List<Pocket> pockets = new List<Pocket>();
 
     [SerializeField] GameObject ballSetPrefab;
     List<Ball> balls = new List<Ball>();
-    public List<Moving> moving = new List<Moving>();
-    List<Ball> pocketed = new List<Ball>();
+    public List<Moving> moving { get; private set; } = new List<Moving>();
+    public List<Ball> pocketed { get; private set; } = new List<Ball>();
     float timer = 0; // ボールが当たった瞬間(movingに入っていないところ)に状態移動しないために
 
     public Players solids { get; private set; } = Players.NONE;
-    bool isBreak = true;
+    public bool isBreak { get; private set; } = true;
     Players winner = Players.NONE;
 
     public States state { get; private set; } = States.MENU;
@@ -33,6 +34,13 @@ public class GameController : MonoBehaviour {
     void ChangeState(States newState) {
         state = newState;
         StateChanged?.Invoke(state);
+
+        switch (state) {
+        case States.SHOT:
+            stick.gameObject.SetActive(true);
+            shotCamera.gameObject.SetActive(true);
+            break;
+        }
     }
 
     public Players currentPlayer { get; private set; } = Players.NONE;
@@ -70,6 +78,13 @@ public class GameController : MonoBehaviour {
 
         cueBall = FindObjectOfType<CueBall>();
         cueBall.BallCollided += CueBallCollided;
+
+        shotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
+    }
+
+    public void Start() {
+        stick.gameObject.SetActive(false);
+        shotCamera.gameObject.SetActive(false);
     }
 
     public void OnDestroy() {
@@ -105,40 +120,63 @@ public class GameController : MonoBehaviour {
         Ball.Group goodGroup = solids == currentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
         Ball.Group badGroup = solids == currentPlayer ? Ball.Group.STRIPE: Ball.Group.SOLID;
 
-        if (is8Scratch()) {
+        if (Is8Scratch()) {
+            Debug.Log("8 ball scratch");
             if (currentPlayer == Players.PLAYER1)
                 winner = Players.PLAYER2;
             else
                 winner = Players.PLAYER1;
 
+            isBreak = false;
             ChangeState(States.END);
             return;
         }
 
-        if (isGroupScratch(badGroup)) {
+        if (IsCueScratch()) {
+            Debug.Log("cue scratch");
+
+            isBreak = false;
             ChangeTurn();
-            ChangeState(States.FREE);
+            // ChangeState(States.FREE);
+            ChangeState(States.SHOT); // デバッグ用
             return;
         }
 
-        if (!isBreak && solids == Players.NONE)
+        if (IsGroupScratch(badGroup)) {
+            Debug.Log("group scratch");
+
+            isBreak = false;
+            ChangeTurn();
+            // ChangeState(States.FREE);
+            ChangeState(States.SHOT); // デバッグ用
+            return;
+        }
+
+        if (!isBreak && solids == Players.NONE && pocketed.Count > 0) {
+            Debug.Log("setting group");
             setGroup();
 
-        if (isBreak && pocketed.Count > 0) {
-            ChooseGroup();
+            goodGroup = solids == currentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
         }
+
+        if (isBreak && pocketed.Count > 0) {
+            Debug.Log("グループ選ぶ(ブレイクショットの成功のみ)");
+            ChooseGroup();
+
+            isBreak = false;
+            ChangeState(States.SHOT);
+            return;
+        }
+
+        isBreak = false;
 
         if (pocketed.Find(b => Ball.GetGroup(b.number) == goodGroup) == null)
             ChangeTurn();
 
         ChangeState(States.SHOT);
-        stick.Enable();
     }
 
     void setGroup() {
-        if (pocketed.Count == 0)
-            return;
-
         var otherPlayer = currentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
 
         if (Ball.GetGroup(pocketed[0].number) == Ball.Group.SOLID)
@@ -152,26 +190,26 @@ public class GameController : MonoBehaviour {
         // choose group ui
     }
 
-    bool is8Scratch() {
-        if (pocketed.Find(b => b.number == 8) == null)
-            return false;
-
-        return true;
+    bool Is8Scratch() {
+        return pocketed.Find(b => b.number == 8) != null;
     }
 
-    bool isGroupScratch(Ball.Group badGroup) {
+    bool IsCueScratch() {
+        return pocketed.Find(b => b.number == -1) != null;
+    }
+
+    bool IsGroupScratch(Ball.Group badGroup) {
         if (solids == Players.NONE)
             return false;
 
-        if (pocketed.Find(b => Ball.GetGroup(b.number) == badGroup) == null)
-            return false;
-
-        return true;
+        return pocketed.Find(b => Ball.GetGroup(b.number) == badGroup) != null;
     }
 
     public void StartGame() {
         currentPlayer = Players.PLAYER1;
         isBreak = true;
+        stick.gameObject.SetActive(true);
+        shotCamera.gameObject.SetActive(true);
         ChangeState(States.SHOT);
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -181,6 +219,9 @@ public class GameController : MonoBehaviour {
     void StickCollided(float velocity) {
         timer = 0;
         pocketed.Clear();
+        stick.gameObject.SetActive(false);
+        shotCamera.gameObject.SetActive(false);
+
         ChangeState(States.SIMULATION);
     }
 
@@ -202,6 +243,12 @@ public class GameController : MonoBehaviour {
 
     void PocketEntered(Ball ball) {
         pocketed.Add(ball);
+
+        if (ball.number != -1) {
+            balls.Remove(ball);
+            moving.Remove(ball.GetComponent<Moving>());
+            ball.gameObject.SetActive(false);
+        }
 
         Ball.Group group = Ball.GetGroup(ball.number);
         LogUpdated?.Invoke($"ボール{ball.number}(group {group})がクッションに当てった");

@@ -6,7 +6,7 @@ public class DebugUI : MonoBehaviour {
     [SerializeField] CueStick cueStick;
 
     GameController gameController;
-    Label debug, state, turn, balls, solids;
+    Label debug, state, turn, balls, solids, pocketed, breakShot;
     Slider velocity, hitVelocity;
 
     void Awake() {
@@ -15,15 +15,17 @@ public class DebugUI : MonoBehaviour {
 
         gameController.LogUpdated += UpdateLogText;
         gameController.StateChanged += UpdateStateText;
-        gameController.TurnChanged += UpdateTurnText;
+        // gameController.TurnChanged += UpdateTurnText;
         cueStick.StickCollided += UpdateHitVelocity;
 
         var uiDocument = GetComponent<UIDocument>();
         debug = (Label) uiDocument.rootVisualElement.Query("debug");
         state = (Label) uiDocument.rootVisualElement.Query("state");
+        breakShot = (Label) uiDocument.rootVisualElement.Query("break");
         turn = (Label) uiDocument.rootVisualElement.Query("turn");
         balls = (Label) uiDocument.rootVisualElement.Query("balls");
         solids = (Label) uiDocument.rootVisualElement.Query("solids");
+        pocketed = (Label) uiDocument.rootVisualElement.Query("pocketed");
         velocity = (Slider) uiDocument.rootVisualElement.Query("velocity");
         hitVelocity = (Slider) uiDocument.rootVisualElement.Query("hit-velocity");
     }
@@ -31,7 +33,7 @@ public class DebugUI : MonoBehaviour {
     public void OnDestroy() {
         gameController.LogUpdated -= UpdateLogText;
         gameController.StateChanged -= UpdateStateText;
-        gameController.TurnChanged -= UpdateTurnText;
+        // gameController.TurnChanged -= UpdateTurnText;
         cueStick.StickCollided -= UpdateHitVelocity;
     }
 
@@ -44,20 +46,30 @@ public class DebugUI : MonoBehaviour {
     public void Update() {
         velocity.value = cueStick.GetComponent<Rigidbody>().velocity.magnitude;
 
+        turn.text = gameController.currentPlayer.ToString();
+        breakShot.text = $"ブレイク:{gameController.isBreak}";
+
         string moving_string = "動いているボール";
-        List<Moving> moving = gameController.moving;
 
-        foreach (Moving m in moving) {
+        foreach (Moving m in gameController.moving) {
             var ball = m.GetComponent<Ball>();
-            var cueBall = m.GetComponent<CueBall>();
 
-            if (ball)
-                moving_string += $"\nボール{ball.number}";
-            if (cueBall)
+            if (ball.number == -1)
                 moving_string += $"\nキューボール";
+            else
+                moving_string += $"\nボール{ball.number}";
         }
-
         balls.text = moving_string;
+
+        string pocketed_string = "クッションボール";
+
+        foreach (Ball b in gameController.pocketed) {
+            if (b.number == -1)
+                pocketed_string += $"\nキューボール";
+            else
+                pocketed_string += $"\nボール{b.number}";
+        }
+        pocketed.text = pocketed_string;
 
         solids.text = $"ソリッド:{gameController.solids}";
     }
@@ -74,7 +86,9 @@ public class DebugUI : MonoBehaviour {
         state.text = $"(現在状態)\n{gameState}";
     }
 
+    /*
     public void UpdateTurnText(GameController.Players gameTurn) {
         turn.text = gameTurn.ToString();
     }
+    */
 }

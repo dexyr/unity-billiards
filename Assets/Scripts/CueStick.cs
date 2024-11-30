@@ -21,29 +21,37 @@ public class CueStick : MonoBehaviour {
         originalRotation = transform.localEulerAngles;
     }
 
+    void OnEnable() {
+        Unfreeze();
+    }
+
+    void OnDisable() {
+        resetPosition();
+    }
+
     void OnCollisionEnter(Collision collision) {
         var cueBall = collision.gameObject.GetComponent<CueBall>();
 
-        if (cueBall) {
-            Debug.Log("hit");
-            Debug.Log(collision.relativeVelocity.magnitude);
-            Debug.Log(collision.relativeVelocity);
+        if (!cueBall)
+            return;
 
-            capsuleCollider.enabled = false;
-            boxCollider.enabled = false;
-            rigidbody.isKinematic = true;
-
-            StickCollided?.Invoke(collision.relativeVelocity.magnitude);
-        }
+        Freeze();
+        StickCollided?.Invoke(collision.relativeVelocity.magnitude);
     }
 
-    public void Enable() {
+    void Unfreeze() {
         capsuleCollider.enabled = true;
         boxCollider.enabled = true;
         rigidbody.isKinematic = false;
     }
 
-    public void ResetPosition() {
+    void Freeze() {
+        capsuleCollider.enabled = false;
+        boxCollider.enabled = false;
+        rigidbody.isKinematic = true;
+    }
+
+    void resetPosition() {
         transform.localPosition = originalPosition;
         transform.localEulerAngles = originalRotation;
     }

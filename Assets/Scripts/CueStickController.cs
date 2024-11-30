@@ -29,6 +29,10 @@ public class CueStickController : MonoBehaviour {
         cueStick.StickCollided += StickCollided;
     }
 
+    void OnDisable() {
+        ResetAim();
+    }
+
     void OnDestroy() {
         cueStick.StickCollided -= StickCollided;
     }
@@ -80,14 +84,10 @@ public class CueStickController : MonoBehaviour {
         rigidbody.AddRelativeForce(new Vector3(0, stickSlide, 0), ForceMode.Impulse);
     }
 
-    public void StickCollided(float velocity) {
-        ResetAim();
-    }
+    public void StickCollided(float velocity) {}
 
     public void ResetAim() {
         aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
-
-        cueStick.ResetPosition();
     }
 
     void Shot() {
