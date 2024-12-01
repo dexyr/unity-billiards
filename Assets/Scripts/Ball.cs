@@ -44,7 +44,7 @@ public class Ball : MonoBehaviour {
     static public Group GetGroup(int number) {
         if (number > 0 && number < 8)
             return Group.SOLID;
-        if (number > 9 && number < 16)
+        if (number > 8 && number < 16)
             return Group.STRIPE;
         if (number == 8)
             return Group.EIGHT;

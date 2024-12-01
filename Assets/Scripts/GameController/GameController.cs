@@ -3,254 +3,135 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
     public enum Players { NONE, PLAYER1, PLAYER2 } // Listのほうがフレキシブルだが
-    public enum States { MENU, SHOT, SIMULATION, FREE, END };
 
     public delegate void LogUpdateHandler(string message);
     public event LogUpdateHandler LogUpdated;
 
-    public delegate void StateChangeHandler(States state);
+    public delegate void StateChangeHandler(GameState state);
     public event StateChangeHandler StateChanged;
 
     public delegate void TurnChangeHandler(Players turn);
     public event TurnChangeHandler TurnChanged;
 
-    CueStick stick;
-    CueBall cueBall;
-    Camera shotCamera;
-    List<Pocket> pockets = new List<Pocket>();
+    [SerializeField] public MenuUI MenuUI;
+    [SerializeField] public TurnUI TurnUI;
+    [SerializeField] public ShotResultUI ShotResultUI;
+    [SerializeField] public GroupMenuUI GroupMenuUI;
+    [SerializeField] public EndUI EndUI;
+    [SerializeField] public FreeUI FreeUI;
+
+    public CueStick Stick;
+    public CueBall CueBall;
+    public Camera Overhead;
+    public Camera ShotCamera;
+
+    public List<Ball> Balls = new List<Ball>();
+    public List<Pocket> Pockets = new List<Pocket>();
 
     [SerializeField] GameObject ballSetPrefab;
-    List<Ball> balls = new List<Ball>();
-    public List<Moving> moving { get; private set; } = new List<Moving>();
-    public List<Ball> pocketed { get; private set; } = new List<Ball>();
-    float timer = 0; // ボールが当たった瞬間(movingに入っていないところ)に状態移動しないために
 
-    public Players solids { get; private set; } = Players.NONE;
-    public bool isBreak { get; private set; } = true;
-    Players winner = Players.NONE;
+    [SerializeField] public GameObject CueBallGhostPrefab;
+    [SerializeField] public LayerMask TableLayer, CueBallGhostLayer;
 
-    public States state { get; private set; } = States.MENU;
-    // propertyのほうがいいかな
-    void ChangeState(States newState) {
-        state = newState;
-        StateChanged?.Invoke(state);
+    public List<Ball> Pocketed { get; private set; } = new List<Ball>();
+    public List<Ball> Solids = new List<Ball>();
+    public List<Ball> Stripes = new List<Ball>();
+    public List<Ball> Player1Balls = new List<Ball>();
+    public List<Ball> Player2Balls = new List<Ball>();
 
-        switch (state) {
-        case States.SHOT:
-            stick.gameObject.SetActive(true);
-            shotCamera.gameObject.SetActive(true);
+    public bool IsBreak;
+    public Players SolidsPlayer = Players.NONE;
+
+    private GameState state;
+    public GameState State {
+        get => state;
+        set {
+            state.Exit();
+            value.Enter();
+            state = value;
+            StateChanged?.Invoke(State);
+        }
+    }
+
+    public Players CurrentPlayer { get; private set; } = Players.NONE;
+    public void ChangeTurn() {
+        switch (CurrentPlayer) {
+        case Players.NONE:
+            CurrentPlayer = Players.PLAYER1;
+            break;
+
+        case Players.PLAYER1:
+            CurrentPlayer = Players.PLAYER2;
+            break;
+
+        case Players.PLAYER2:
+            CurrentPlayer = Players.PLAYER1;
             break;
         }
-    }
 
-    public Players currentPlayer { get; private set; } = Players.NONE;
-    void ChangeTurn() {
-        if (currentPlayer == Players.PLAYER1)
-            currentPlayer = Players.PLAYER2;
-        else
-            currentPlayer = Players.PLAYER1;
-
-        TurnChanged?.Invoke(currentPlayer);
-    }
-
-    public void Awake() {
-        var spawnTransform = GameObject.FindGameObjectWithTag("Ball Spawn").GetComponent<Transform>();
-        GameObject ballSet = Instantiate(ballSetPrefab, spawnTransform.position, spawnTransform.rotation);
-
-        var ballSetBalls = ballSet.GetComponentsInChildren<Ball>();
-        foreach (Ball b in ballSetBalls)
-            balls.Add(b);
-
-        var pocket_objects = FindObjectsByType<Pocket>(FindObjectsSortMode.None);
-        foreach (Pocket p in pocket_objects) {
-            pockets.Add(p);
-            p.PocketEntered += PocketEntered;
-        }
-
-        var moving_objects = FindObjectsByType<Moving>(FindObjectsSortMode.None);
-        foreach (Moving m in moving_objects) {
-            moving.Add(m);
-            m.MotionUpdated += BallMotion;
-        }
-
-        stick = FindObjectOfType<CueStick>();
-        stick.StickCollided += StickCollided;
-
-        cueBall = FindObjectOfType<CueBall>();
-        cueBall.BallCollided += CueBallCollided;
-
-        shotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
+        TurnChanged?.Invoke(CurrentPlayer);
     }
 
     public void Start() {
-        stick.gameObject.SetActive(false);
-        shotCamera.gameObject.SetActive(false);
-    }
+        var spawnTransform = GameObject.FindGameObjectWithTag("Ball Spawn").GetComponent<Transform>();
+        GameObject ballSet = Instantiate(ballSetPrefab, spawnTransform.position, spawnTransform.rotation);
 
-    public void OnDestroy() {
-        foreach (Pocket p in pockets)
-            p.PocketEntered += PocketEntered;
+        foreach (Ball b in ballSet.GetComponentsInChildren<Ball>()) {
+            Balls.Add(b);
 
-        foreach (Moving m in moving)
-            m.MotionUpdated -= BallMotion;
+            if (Ball.GetGroup(b.number) == Ball.Group.SOLID)
+                Solids.Add(b);
 
-        stick.StickCollided -= StickCollided;
-        cueBall.BallCollided -= CueBallCollided;
+            if (Ball.GetGroup(b.number) == Ball.Group.STRIPE)
+                Stripes.Add(b);
+        }
+
+        foreach (Pocket p in FindObjectsByType<Pocket>(FindObjectsSortMode.None))
+            Pockets.Add(p);
+
+
+        Stick = FindObjectOfType<CueStick>();
+        Stick.gameObject.SetActive(false);
+
+        Overhead = GameObject.FindGameObjectWithTag("Overhead Camera").GetComponent<Camera>();
+
+        ShotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
+        ShotCamera.gameObject.SetActive(false);
+
+        CueBall = FindObjectOfType<CueBall>();
+
+        ShotResultUI.Visible = false;
+        TurnUI.Visible = false;
+        GroupMenuUI.Visible = false;
+        FreeUI.Visible = false;
+        EndUI.Visible = false;
+        state = new Menu(this);
+        state.Enter();
     }
 
     public void Update() {
-        timer += Time.deltaTime;
-
-        switch (state) {
-        case States.SIMULATION:
-            Simulate();
-            break;
-        }
+        state.Update();
     }
 
-    void Simulate() {
-        if (timer < 0.1f)
-            return;
-
-        if (moving.Count > 0)
-            return;
-
-        // 転換 ===============================================================
-
-        Ball.Group goodGroup = solids == currentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
-        Ball.Group badGroup = solids == currentPlayer ? Ball.Group.STRIPE: Ball.Group.SOLID;
-
-        if (Is8Scratch()) {
-            Debug.Log("8 ball scratch");
-            if (currentPlayer == Players.PLAYER1)
-                winner = Players.PLAYER2;
-            else
-                winner = Players.PLAYER1;
-
-            isBreak = false;
-            ChangeState(States.END);
-            return;
-        }
-
-        if (IsCueScratch()) {
-            Debug.Log("cue scratch");
-
-            isBreak = false;
-            ChangeTurn();
-            // ChangeState(States.FREE);
-            ChangeState(States.SHOT); // デバッグ用
-            return;
-        }
-
-        if (IsGroupScratch(badGroup)) {
-            Debug.Log("group scratch");
-
-            isBreak = false;
-            ChangeTurn();
-            // ChangeState(States.FREE);
-            ChangeState(States.SHOT); // デバッグ用
-            return;
-        }
-
-        if (!isBreak && solids == Players.NONE && pocketed.Count > 0) {
-            Debug.Log("setting group");
-            setGroup();
-
-            goodGroup = solids == currentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
-        }
-
-        if (isBreak && pocketed.Count > 0) {
-            Debug.Log("グループ選ぶ(ブレイクショットの成功のみ)");
-            ChooseGroup();
-
-            isBreak = false;
-            ChangeState(States.SHOT);
-            return;
-        }
-
-        isBreak = false;
-
-        if (pocketed.Find(b => Ball.GetGroup(b.number) == goodGroup) == null)
-            ChangeTurn();
-
-        ChangeState(States.SHOT);
+    public Players GetOtherPlayer() {
+        return CurrentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
     }
 
-    void setGroup() {
-        var otherPlayer = currentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
+    public Ball.Group GetCurrentGroup() {
+        if (SolidsPlayer == Players.NONE)
+            return Ball.Group.NONE;
 
-        if (Ball.GetGroup(pocketed[0].number) == Ball.Group.SOLID)
-            solids = currentPlayer;
-        else {
-            solids = otherPlayer;
-        }
+        return SolidsPlayer == CurrentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
     }
 
-    void ChooseGroup() {
-        // choose group ui
-    }
-
-    bool Is8Scratch() {
-        return pocketed.Find(b => b.number == 8) != null;
-    }
-
-    bool IsCueScratch() {
-        return pocketed.Find(b => b.number == -1) != null;
-    }
-
-    bool IsGroupScratch(Ball.Group badGroup) {
-        if (solids == Players.NONE)
-            return false;
-
-        return pocketed.Find(b => Ball.GetGroup(b.number) == badGroup) != null;
-    }
-
-    public void StartGame() {
-        currentPlayer = Players.PLAYER1;
-        isBreak = true;
-        stick.gameObject.SetActive(true);
-        shotCamera.gameObject.SetActive(true);
-        ChangeState(States.SHOT);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-
-    void StickCollided(float velocity) {
-        timer = 0;
-        pocketed.Clear();
-        stick.gameObject.SetActive(false);
-        shotCamera.gameObject.SetActive(false);
-
-        ChangeState(States.SIMULATION);
-    }
-
-    void BallMotion(Moving moving_object, bool isMoving) {
-        if (isMoving) {
-            if (moving.Contains(moving_object))
-                return;
-
-            moving.Add(moving_object);
-        }
+    public bool IsEightShot() {
+        if (SolidsPlayer == CurrentPlayer)
+            return Solids.Count == 0;
         else
-            moving.Remove(moving_object);
+            return Stripes.Count == 0;
     }
 
-    void CueBallCollided(Ball ball) {
-        Ball.Group group = Ball.GetGroup(ball.number);
-        LogUpdated?.Invoke($"ボール{ball.number}(group {group})がキューボールに当てった");
-    }
-
-    void PocketEntered(Ball ball) {
-        pocketed.Add(ball);
-
-        if (ball.number != -1) {
-            balls.Remove(ball);
-            moving.Remove(ball.GetComponent<Moving>());
-            ball.gameObject.SetActive(false);
-        }
-
-        Ball.Group group = Ball.GetGroup(ball.number);
-        LogUpdated?.Invoke($"ボール{ball.number}(group {group})がクッションに当てった");
+    public void Log(string message) {
+        LogUpdated?.Invoke(message);
     }
 }

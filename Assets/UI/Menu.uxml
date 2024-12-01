@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=155558cbcd1b7024eb7b552ee6910878&amp;type=3#Menu" />
     <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 1;">
-        <ui:Label tabindex="-1" text="ビリヤード" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+        <ui:Label tabindex="-1" text="ビリヤード" parse-escape-sequences="true" display-tooltip-when-elided="true" class="title" />
         <ui:Button text="スタート" parse-escape-sequences="true" display-tooltip-when-elided="true" name="start" />
     </ui:VisualElement>
 </ui:UXML>

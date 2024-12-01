@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=155558cbcd1b7024eb7b552ee6910878&amp;type=3#Menu" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1;">
+        <ui:VisualElement style="flex-grow: initial; height: 80%;">
+            <ui:Label tabindex="-1" text="グループ選択" parse-escape-sequences="true" display-tooltip-when-elided="true" class="heading" />
+            <ui:Label tabindex="-1" text="ポケットしたボール" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" class="subheading" />
+            <ui:VisualElement style="flex-grow: initial; flex-direction: row;">
+                <ui:VisualElement name="VisualElement" style="flex-grow: 1;">
+                    <ui:Label tabindex="-1" text="ソリッド" parse-escape-sequences="true" display-tooltip-when-elided="true" class="subheading" />
+                    <ui:Label tabindex="-1" text="無い" parse-escape-sequences="true" display-tooltip-when-elided="true" name="solids" class="text" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1;">
+                    <ui:Label tabindex="-1" text="ストライプ" parse-escape-sequences="true" display-tooltip-when-elided="true" class="subheading" />
+                    <ui:Label tabindex="-1" text="無い" parse-escape-sequences="true" display-tooltip-when-elided="true" name="stripes" class="text" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="VisualElement" style="flex-grow: initial; flex-direction: row; justify-content: center;">
+            <ui:Button text="ソリッド" parse-escape-sequences="true" display-tooltip-when-elided="true" name="solid-button" />
+            <ui:Button text="ストライプ" parse-escape-sequences="true" display-tooltip-when-elided="true" name="stripe-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

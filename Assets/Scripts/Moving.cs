@@ -5,12 +5,9 @@ public class Moving : MonoBehaviour {
     public MotionHandler MotionUpdated;
 
     void FixedUpdate() {
-        // if (!isMoving)
-        //     return;
-
         float velocity = Mathf.Abs(GetComponent<Rigidbody>().velocity.magnitude);
 
-        if (velocity > 0.01f)
+        if (velocity > 0.005f)
             MotionUpdated?.Invoke(this, true);
         else
             MotionUpdated?.Invoke(this, false);

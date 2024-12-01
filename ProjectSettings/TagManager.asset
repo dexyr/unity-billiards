@@ -8,6 +8,7 @@ TagManager:
   - Ball Spawn
   - Table
   - Shot Camera
+  - Overhead Camera
   layers:
   - Default
   - TransparentFX
@@ -15,8 +16,8 @@ TagManager:
   - Cue Stick
   - Water
   - UI
-  - 
-  - 
+  - Table
+  - Cue Ball Ghost
   - 
   - 
   - 
