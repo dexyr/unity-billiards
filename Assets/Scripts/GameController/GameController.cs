@@ -20,6 +20,8 @@ public class GameController : MonoBehaviour {
     [SerializeField] public EndUI EndUI;
     [SerializeField] public FreeUI FreeUI;
 
+    [SerializeField] public TargetCamera TargetCamera;
+
     public CueStick Stick;
     public CueBall CueBall;
     public Camera Overhead;
@@ -105,6 +107,9 @@ public class GameController : MonoBehaviour {
         GroupMenuUI.Visible = false;
         FreeUI.Visible = false;
         EndUI.Visible = false;
+
+        TargetCamera.gameObject.SetActive(false);
+
         state = new Menu(this);
         state.Enter();
     }

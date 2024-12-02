@@ -10,8 +10,6 @@ public class CueStick : MonoBehaviour {
     Vector3 originalPosition;
     Vector3 originalRotation;
 
-    // Žè“®‚É‘¬“x‚ðŒvŽZ‚·‚é
-
     void Awake() {
         capsuleCollider = GetComponent<CapsuleCollider>();
         boxCollider = GetComponent<BoxCollider>();

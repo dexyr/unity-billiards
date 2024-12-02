@@ -4,9 +4,13 @@
         <ui:VisualElement style="flex-grow: initial; height: 80%;">
             <ui:Label tabindex="-1" text="フリーボール位置" parse-escape-sequences="true" display-tooltip-when-elided="true" class="heading" />
         </ui:VisualElement>
-        <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row; justify-content: center; align-items: center; display: flex;">
             <ui:Button text="確定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="confirm" />
             <ui:Button text="やり直す" parse-escape-sequences="true" display-tooltip-when-elided="true" name="cancel" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; align-items: flex-start; justify-content: space-between; flex-direction: row;">
+            <ui:Label tabindex="-1" text="(C) - オーバーヘッドカメラ" parse-escape-sequences="true" display-tooltip-when-elided="true" name="hint1" class="text" />
+            <ui:Label tabindex="-1" text="Hint2" parse-escape-sequences="true" display-tooltip-when-elided="true" name="hint2" class="text" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

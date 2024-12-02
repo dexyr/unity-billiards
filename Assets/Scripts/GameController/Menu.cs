@@ -7,6 +7,8 @@ public class Menu : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        game.TargetCamera.Target = game.Balls[0].gameObject;
+
         game.MenuUI.Visible = true;
         game.MenuUI.Start.clicked += StartGame;
     }

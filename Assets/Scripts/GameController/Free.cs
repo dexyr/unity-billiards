@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Free : GameState {
@@ -8,11 +7,15 @@ public class Free : GameState {
     Color valid;
     Color invalid = new Color(1, 0, 0, 0.5f);
 
-    bool isValid, isSet;
+    bool isValid, isSet, isOverhead;
+
+    int index;
 
     public Free(GameController game) : base(game) {
         isValid = false;
         isSet = false;
+        isOverhead = true;
+        index = 0;
     }
 
     public override void Enter() {
@@ -26,9 +29,13 @@ public class Free : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        game.TurnUI.Refresh(game.CurrentPlayer, game.GetCurrentGroup());
+
         game.FreeUI.Visible = true;
         game.FreeUI.Confirm.visible = false;
         game.FreeUI.Cancel.visible = false;
+        game.FreeUI.SetHint(new string[] { "(C) - ボールカメラ" });
+        game.TargetCamera.Target = game.Balls[0].gameObject;
 
         game.FreeUI.Confirm.clicked += Confirm;
         game.FreeUI.Cancel.clicked += Cancel;
@@ -36,6 +43,8 @@ public class Free : GameState {
 
     public override void Exit() {
         GameObject.Destroy(cueBallGhost);
+
+        game.TargetCamera.gameObject.SetActive(false);
 
         game.FreeUI.Visible = false;
         game.FreeUI.Confirm.visible = false;
@@ -60,10 +69,65 @@ public class Free : GameState {
             material.color = invalid;
         }
 
-        if (Input.GetMouseButtonDown(0))
-            select();
-        if (!isSet)
-            move();
+        if (isOverhead && Input.GetMouseButtonDown(0))
+            Select();
+        if (isOverhead && !isSet)
+            Move();
+
+        if (!isOverhead && Input.GetMouseButtonDown(0))
+            ChangeBall(1);
+        if (!isOverhead && Input.GetMouseButtonDown(1))
+            ChangeBall(-1);
+
+        if (Input.GetKeyDown(KeyCode.C))
+            ChangeCamera();
+    }
+
+    void ChangeBall(int value) {
+        index += value;
+
+        if (index < 0)
+            index = game.Balls.Count - 1;
+        if (index >= game.Balls.Count)
+            index = 0;
+
+        game.TargetCamera.Target = game.Balls[index].gameObject;
+    }
+
+    void ChangeCamera() {
+        if (game.TargetCamera.gameObject.activeSelf) {
+            game.TargetCamera.gameObject.SetActive(false);
+            cueBallGhost.gameObject.SetActive(true);
+            isOverhead = true;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            game.FreeUI.SetHint(new string[] {"(C) - ボールカメラ"});
+
+            if (isSet) {
+                game.FreeUI.Confirm.visible = true;
+                game.FreeUI.Cancel.visible = true;
+            }
+            else {
+                game.FreeUI.Confirm.visible = false;
+                game.FreeUI.Cancel.visible = false;
+            }
+        }
+        else {
+            game.TargetCamera.gameObject.SetActive(true);
+            isOverhead = false;
+
+            if (!isSet)
+                cueBallGhost.gameObject.SetActive(false);
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            game.FreeUI.Confirm.visible = false;
+            game.FreeUI.Cancel.visible = false;
+            game.FreeUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ", "(クリック) - ボール移動" });
+        }
     }
 
     public void Confirm() {
@@ -84,7 +148,7 @@ public class Free : GameState {
         isSet = false;
     }
 
-    void select() {
+    void Select() {
         if (!isValid)
             return;
 
@@ -94,7 +158,7 @@ public class Free : GameState {
         isSet = true;
     }
 
-    void move() {
+    void Move() {
         Vector3 mousePosition = Input.mousePosition;
         Ray ray = game.Overhead.ScreenPointToRay(mousePosition);
 

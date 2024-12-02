@@ -13,12 +13,12 @@ public class CueStickController : MonoBehaviour {
     float offsetMax = 0.02f;
     Vector3 aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
 
+    static int angleMin = 15;
+    static int angleMax = 40;
+
     static float aimDistanceMin = 0.1f;
     static float aimDistanceMax = 0.4f;
     static float scrollSensitivity = 0.01f;
-
-    static int angleMin = 15;
-    static int angleMax = 40;
 
     public enum ShotState { SHOT, AIM, LOOK };
 
@@ -68,8 +68,6 @@ public class CueStickController : MonoBehaviour {
         camera.transform.rotation = transform.rotation;
         camera.transform.position = transform.position;
         camera.transform.Translate(aimOffset);
-
-        // transform.Translate(new Vector3(0, 0, stickSlide));
     }
 
     public void FixedUpdate() {
@@ -95,9 +93,6 @@ public class CueStickController : MonoBehaviour {
 
         float z = Input.GetAxis("Mouse Y") * sensitivity * rigidbody.mass;
         stickSlide = z;
-        
-        // stickSlide += z;
-        // stickSlide = Mathf.Clamp(stickSlide, -(aimDistanceMin + aimDistanceMax) / 2, aimDistanceMin * 2);
     }
 
     void Aim() {

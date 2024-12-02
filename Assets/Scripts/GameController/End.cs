@@ -11,6 +11,8 @@ public class End : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        game.TurnUI.Visible = false;
+
         game.EndUI.Visible = true;
         game.EndUI.Refresh(winner, game.Player1Balls, game.Player2Balls);
     }
