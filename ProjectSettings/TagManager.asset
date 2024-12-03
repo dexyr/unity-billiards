@@ -5,10 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cue Ball
-  - Ball Spawn
   - Table
   - Shot Camera
   - Overhead Camera
+  - Rack Spawn
+  - Cue Spawn
   layers:
   - Default
   - TransparentFX

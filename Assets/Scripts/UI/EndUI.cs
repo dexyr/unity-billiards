@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 public class EndUI : MonoBehaviour {
     UIDocument uiDocument;
     Label winner, player1, player2;
-    Button replay, menu;
+    public Button Replay, Menu;
 
     public bool Visible {
         get => uiDocument.rootVisualElement.visible;
@@ -17,8 +17,8 @@ public class EndUI : MonoBehaviour {
     public void Awake() {
         uiDocument = GetComponent<UIDocument>();
 
-        replay = (Button) uiDocument.rootVisualElement.Query("replay");
-        menu = (Button) uiDocument.rootVisualElement.Query("menu");
+        Replay = (Button) uiDocument.rootVisualElement.Query("replay");
+        Menu = (Button) uiDocument.rootVisualElement.Query("menu");
         winner = (Label) uiDocument.rootVisualElement.Query("winner");
         player1 = (Label) uiDocument.rootVisualElement.Query("player1");
         player2 = (Label) uiDocument.rootVisualElement.Query("player2");

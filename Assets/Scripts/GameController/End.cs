@@ -15,11 +15,28 @@ public class End : GameState {
 
         game.EndUI.Visible = true;
         game.EndUI.Refresh(winner, game.Player1Balls, game.Player2Balls);
+
+        game.EndUI.Replay.clicked += Replay;
+        game.EndUI.Menu.clicked += Return;
     }
 
     public override void Exit() {
         game.EndUI.Visible = false;
+
+        game.EndUI.Replay.clicked -= Replay;
+        game.EndUI.Menu.clicked -= Return;
     }
 
     public override void Update() {}
+
+    public void Replay() {
+        game.ClearTable();
+        game.SetTable();
+
+        game.State = new Shot(game);
+    }
+
+    public void Return() {
+        game.State = new Menu(game);
+    }
 }

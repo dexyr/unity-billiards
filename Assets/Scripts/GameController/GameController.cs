@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] public MenuUI MenuUI;
     [SerializeField] public TurnUI TurnUI;
+    [SerializeField] public ShotUI ShotUI;
     [SerializeField] public ShotResultUI ShotResultUI;
     [SerializeField] public GroupMenuUI GroupMenuUI;
     [SerializeField] public EndUI EndUI;
@@ -22,15 +23,17 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] public TargetCamera TargetCamera;
 
+    public CueStickController StickController;
     public CueStick Stick;
     public CueBall CueBall;
     public Camera Overhead;
     public Camera ShotCamera;
 
+    GameObject ballSet;
     public List<Ball> Balls = new List<Ball>();
     public List<Pocket> Pockets = new List<Pocket>();
 
-    [SerializeField] GameObject ballSetPrefab;
+    [SerializeField] GameObject ballSetPrefab, cueBallPrefab;
 
     [SerializeField] public GameObject CueBallGhostPrefab;
     [SerializeField] public LayerMask TableLayer, CueBallGhostLayer;
@@ -75,8 +78,35 @@ public class GameController : MonoBehaviour {
     }
 
     public void Start() {
-        var spawnTransform = GameObject.FindGameObjectWithTag("Ball Spawn").GetComponent<Transform>();
-        GameObject ballSet = Instantiate(ballSetPrefab, spawnTransform.position, spawnTransform.rotation);
+        foreach (Pocket p in FindObjectsByType<Pocket>(FindObjectsSortMode.None))
+            Pockets.Add(p);
+
+        StickController = FindObjectOfType<CueStickController>();
+        Stick = FindObjectOfType<CueStick>();
+
+        StickController.gameObject.SetActive(false); // parent
+
+        Overhead = GameObject.FindGameObjectWithTag("Overhead Camera").GetComponent<Camera>();
+
+        ShotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
+        ShotCamera.gameObject.SetActive(false);
+
+        ShotResultUI.Visible = false;
+        ShotUI.Visible = false;
+        TurnUI.Visible = false;
+        GroupMenuUI.Visible = false;
+        FreeUI.Visible = false;
+        EndUI.Visible = false;
+
+        TargetCamera.gameObject.SetActive(false);
+
+        state = new Menu(this);
+        state.Enter();
+    }
+
+    public void SetTable() {
+        var rackSpawn = GameObject.FindGameObjectWithTag("Rack Spawn").GetComponent<Transform>();
+        ballSet = Instantiate(ballSetPrefab, rackSpawn.position, rackSpawn.rotation);
 
         foreach (Ball b in ballSet.GetComponentsInChildren<Ball>()) {
             Balls.Add(b);
@@ -88,30 +118,30 @@ public class GameController : MonoBehaviour {
                 Stripes.Add(b);
         }
 
-        foreach (Pocket p in FindObjectsByType<Pocket>(FindObjectsSortMode.None))
-            Pockets.Add(p);
+        var cueBallSpawn = GameObject.FindGameObjectWithTag("Cue Spawn").GetComponent<Transform>();
+        CueBall = Instantiate(cueBallPrefab, cueBallSpawn.position, cueBallSpawn.rotation).GetComponent<CueBall>();
 
+        StickController.Target = CueBall.gameObject;
 
-        Stick = FindObjectOfType<CueStick>();
-        Stick.gameObject.SetActive(false);
+        CurrentPlayer = Players.PLAYER1;
+        IsBreak = true;
+    }
 
-        Overhead = GameObject.FindGameObjectWithTag("Overhead Camera").GetComponent<Camera>();
+    public void ClearTable() {
+        if (ballSet)
+            Destroy(ballSet);
 
-        ShotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
-        ShotCamera.gameObject.SetActive(false);
+        if (CueBall)
+            Destroy(CueBall.gameObject);
 
-        CueBall = FindObjectOfType<CueBall>();
+        Balls.Clear();
+        Pocketed.Clear();
+        Solids.Clear();
+        Stripes.Clear();
+        Player1Balls.Clear();
+        Player2Balls.Clear();
 
-        ShotResultUI.Visible = false;
-        TurnUI.Visible = false;
-        GroupMenuUI.Visible = false;
-        FreeUI.Visible = false;
-        EndUI.Visible = false;
-
-        TargetCamera.gameObject.SetActive(false);
-
-        state = new Menu(this);
-        state.Enter();
+        StickController.Target = null;
     }
 
     public void Update() {

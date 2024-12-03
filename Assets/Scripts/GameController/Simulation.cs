@@ -71,7 +71,6 @@ public class Simulation : GameState {
         if (ball.number == -1)
             return;
 
-
         game.Pocketed.Add(ball);
 
         if (game.CurrentPlayer == GameController.Players.PLAYER1)

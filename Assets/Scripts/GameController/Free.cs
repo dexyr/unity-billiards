@@ -26,6 +26,8 @@ public class Free : GameState {
         float localRadius = cueBallGhost.GetComponent<SphereCollider>().radius; // ‚±‚ê‚Ílocal
         radius = localRadius * cueBallGhost.transform.localScale.x; // ‚Ç‚ê‚Å‚à“¯‚¶
 
+        game.CueBall.gameObject.SetActive(false);
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 

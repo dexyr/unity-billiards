@@ -7,21 +7,21 @@ public class Menu : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        game.TargetCamera.Target = game.Balls[0].gameObject;
-
         game.MenuUI.Visible = true;
         game.MenuUI.Start.clicked += StartGame;
     }
     public override void Exit() {
         game.MenuUI.Visible = false;
         game.MenuUI.Start.clicked -= StartGame;
+
+        game.TurnUI.Visible = true;
     }
     public override void Update() { }
 
     public void StartGame() {
-        game.ChangeTurn();
-        game.IsBreak = true;
-        game.TurnUI.Visible = true;
+        game.ClearTable();
+        game.SetTable();
+
         game.State = new Shot(game);
     }
 }

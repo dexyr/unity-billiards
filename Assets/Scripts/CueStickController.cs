@@ -1,7 +1,8 @@
 using UnityEngine;
 
 public class CueStickController : MonoBehaviour {
-    [SerializeField] GameObject target;
+    public GameObject Target;
+
     [SerializeField] new GameObject camera;
     [SerializeField] float sensitivity = 2;
 
@@ -13,8 +14,8 @@ public class CueStickController : MonoBehaviour {
     float offsetMax = 0.02f;
     Vector3 aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
 
-    static int angleMin = 15;
-    static int angleMax = 40;
+    static int angleMin = 10;
+    static int angleMax = 45;
 
     static float aimDistanceMin = 0.1f;
     static float aimDistanceMax = 0.4f;
@@ -62,7 +63,7 @@ public class CueStickController : MonoBehaviour {
             break;
         }
 
-        transform.position = target.transform.position;
+        transform.position = Target.transform.position;
         transform.Translate(stickOffset);
 
         camera.transform.rotation = transform.rotation;

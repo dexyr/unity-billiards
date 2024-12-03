@@ -60,6 +60,7 @@ public class ShotResult : GameState {
 
         if (IsGroupScratch(badGroup)) {
             game.ShotResultUI.Results.Add("グループ相違クラッチしました。");
+            game.ShotResultUI.Results.Add("ターンが交代します。");
 
             game.ChangeTurn();
             next = new Free(game);
