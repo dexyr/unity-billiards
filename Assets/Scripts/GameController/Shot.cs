@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class Shot : GameState {
     bool isOverhead;
+    Ball call;
 
-    public Shot(GameController game) : base(game) {
+    public Shot(GameController game, Ball call) : base(game) {
+        this.call = call;
         isOverhead = false;
     }
 
@@ -15,6 +17,9 @@ public class Shot : GameState {
         game.ShotCamera.gameObject.SetActive(true);
 
         game.TurnUI.Refresh(game.CurrentPlayer, game.GetCurrentGroup());
+        game.TurnUI.SetCall(call);
+        game.TurnUI.Call.visible = true;
+
         game.ShotUI.Visible = true;
 
         game.Stick.StickCollided += StickCollided;
@@ -24,6 +29,7 @@ public class Shot : GameState {
         game.StickController.gameObject.SetActive(false);
         game.ShotCamera.gameObject.SetActive(false);
 
+        game.TurnUI.Call.visible = false;
         game.ShotUI.Visible = false;
 
         game.Stick.StickCollided -= StickCollided;

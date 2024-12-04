@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] public MenuUI MenuUI;
     [SerializeField] public TurnUI TurnUI;
+    [SerializeField] public CallUI CallUI;
     [SerializeField] public ShotUI ShotUI;
     [SerializeField] public ShotResultUI ShotResultUI;
     [SerializeField] public GroupMenuUI GroupMenuUI;
@@ -35,7 +36,7 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] GameObject ballSetPrefab, cueBallPrefab;
 
-    [SerializeField] public GameObject CueBallGhostPrefab;
+    [SerializeField] public GameObject CueBallGhostPrefab, CallGhostPrefab;
     [SerializeField] public LayerMask TableLayer, CueBallGhostLayer;
 
     public List<Ball> Pocketed { get; private set; } = new List<Ball>();
@@ -92,8 +93,10 @@ public class GameController : MonoBehaviour {
         ShotCamera.gameObject.SetActive(false);
 
         ShotResultUI.Visible = false;
+        CallUI.Visible = false;
         ShotUI.Visible = false;
         TurnUI.Visible = false;
+        TurnUI.Call.visible = false;
         GroupMenuUI.Visible = false;
         FreeUI.Visible = false;
         EndUI.Visible = false;

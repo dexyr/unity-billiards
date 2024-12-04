@@ -86,7 +86,7 @@ public class ShotResult : GameState {
             game.ChangeTurn();
         }
 
-        next = new Shot(game);
+        next = new Call(game);
     }
 
     public override void Update() {}

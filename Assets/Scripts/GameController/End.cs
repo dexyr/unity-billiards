@@ -33,7 +33,7 @@ public class End : GameState {
         game.ClearTable();
         game.SetTable();
 
-        game.State = new Shot(game);
+        game.State = new Call(game);
     }
 
     public void Return() {

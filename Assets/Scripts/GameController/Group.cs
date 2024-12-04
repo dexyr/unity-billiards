@@ -48,7 +48,7 @@ public class Group : GameState {
         else
             game.SolidsPlayer = otherPlayer;
 
-        game.State = new Shot(game);
+        game.State = new Call(game);
     }
 
 }

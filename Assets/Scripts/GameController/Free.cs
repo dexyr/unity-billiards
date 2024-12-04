@@ -57,6 +57,19 @@ public class Free : GameState {
     }
 
     public override void Update() {
+        if (isOverhead && Input.GetMouseButtonDown(0))
+            Select();
+        if (isOverhead && !isSet)
+            Move();
+
+        if (!isOverhead && Input.GetMouseButtonDown(0))
+            ChangeBall(1);
+        if (!isOverhead && Input.GetMouseButtonDown(1))
+            ChangeBall(-1);
+
+        if (Input.GetKeyDown(KeyCode.C))
+            ChangeCamera();
+
         // RigidbodyÇégÇÌÇ∏ÅATriggerÇ‡égÇÌÇ∏
         Collider[] colliders = Physics.OverlapSphere(cueBallGhost.transform.position, radius, ~(game.TableLayer | game.CueBallGhostLayer));
 
@@ -70,19 +83,6 @@ public class Free : GameState {
             isValid = false;
             material.color = invalid;
         }
-
-        if (isOverhead && Input.GetMouseButtonDown(0))
-            Select();
-        if (isOverhead && !isSet)
-            Move();
-
-        if (!isOverhead && Input.GetMouseButtonDown(0))
-            ChangeBall(1);
-        if (!isOverhead && Input.GetMouseButtonDown(1))
-            ChangeBall(-1);
-
-        if (Input.GetKeyDown(KeyCode.C))
-            ChangeCamera();
     }
 
     void ChangeBall(int value) {
@@ -140,7 +140,7 @@ public class Free : GameState {
         rigidbody.velocity = Vector3.zero;
         rigidbody.Sleep();
 
-        game.State = new Shot(game);
+        game.State = new Call(game);
     }
 
     public void Cancel() {

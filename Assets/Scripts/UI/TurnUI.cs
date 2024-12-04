@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 public class TurnUI : MonoBehaviour {
     UIDocument uiDocument;
     Label player, group;
+    public Label Call;
 
     public bool Visible {
         get => uiDocument.rootVisualElement.visible;
@@ -17,6 +18,7 @@ public class TurnUI : MonoBehaviour {
 
         player = (Label) uiDocument.rootVisualElement.Query("player");
         group = (Label) uiDocument.rootVisualElement.Query("group");
+        Call = (Label) uiDocument.rootVisualElement.Query("call");
     }
 
     public void Refresh(GameController.Players player, Ball.Group group) {
@@ -38,5 +40,12 @@ public class TurnUI : MonoBehaviour {
             this.group.text = "【グループ】ストライプ";
             break;
         }
+    }
+
+    public void SetCall(Ball ball) {
+        if (ball)
+            Call.text = $"【コール】{ball.number} →（ポケットは実装中）";
+        else
+            Call.text = $"【コール】セーフティ";
     }
 }

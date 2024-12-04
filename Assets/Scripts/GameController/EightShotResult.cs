@@ -24,7 +24,7 @@ public class EightShotResult : GameState {
         }
 
         game.ChangeTurn();
-        game.State = new Shot(game);
+        game.State = new Call(game);
     }
 
     bool IsCueScratch() {

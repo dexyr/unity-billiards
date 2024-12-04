@@ -3,5 +3,6 @@
     <ui:VisualElement style="flex-grow: 1; align-items: flex-end;">
         <ui:Label tabindex="-1" text="プレイヤー?" parse-escape-sequences="true" display-tooltip-when-elided="true" name="player" class="heading" />
         <ui:Label tabindex="-1" text="【グループ】無し" parse-escape-sequences="true" display-tooltip-when-elided="true" name="group" class="text" />
+        <ui:Label tabindex="-1" text="【コール】セーフティ" parse-escape-sequences="true" display-tooltip-when-elided="true" name="call" class="text" />
     </ui:VisualElement>
 </ui:UXML>
