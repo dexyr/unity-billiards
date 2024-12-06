@@ -42,6 +42,7 @@ Button {
     -unity-font-style: normal;
     -unity-font-definition: initial;
     -unity-font: url("project://database/Assets/UI/Fonts/NotoSansJP-Medium.ttf?fileID=12800000&guid=d156ba8163cdb8a4b852efec3c575bbf&type=3#NotoSansJP-Medium");
+    text-shadow: 2px 2px 4px rgb(0, 0, 0);
 }
 
 .text {

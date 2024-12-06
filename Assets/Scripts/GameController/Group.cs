@@ -43,11 +43,15 @@ public class Group : GameState {
     public void ChooseGroup(Ball.Group group) {
         GameController.Players otherPlayer = game.GetOtherPlayer();
 
-        if (group == Ball.Group.SOLID)
+        if (group == Ball.Group.SOLID) {
             game.SolidsPlayer = game.CurrentPlayer;
-        else
+            game.TurnUI.Refresh(game.CurrentPlayer, Ball.Group.SOLID);
+        }
+        else {
             game.SolidsPlayer = otherPlayer;
-
+            game.TurnUI.Refresh(game.CurrentPlayer, Ball.Group.STRIPE);
+        }
+        
         game.State = new Call(game);
     }
 

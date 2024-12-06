@@ -10,6 +10,7 @@ TagManager:
   - Overhead Camera
   - Rack Spawn
   - Cue Spawn
+  - Ball Spawn
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - UI
   - Table
   - Cue Ball Ghost
-  - 
+  - Pocket
   - 
   - 
   - 

@@ -4,7 +4,7 @@ using UnityEngine;
 public class EightShotResult : GameState {
     List<Ball> pocketedNow;
 
-    public EightShotResult(GameController game, List<Ball> pocketedNow) : base(game) {
+    public EightShotResult(GameController game, List<Ball> pocketedNow, CallInfo? call) : base(game) {
         this.pocketedNow = pocketedNow;
     }
 

@@ -2,20 +2,27 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
+public struct CallInfo {
+    public Ball Ball;
+    public Pocket Pocket;
+}
+
 public class Call : GameState {
-    GameObject callGhost;
+    GameObject callGhost, pocketGhost;
 
     Ball.Group validGroup;
 
     bool isBallSet, isPocketSet;
-    Ball selectedBall;
-    Pocket selectedPocket;
+    CallInfo call;
 
     public Call(GameController game) : base(game) {
         callGhost = GameObject.Instantiate(game.CallGhostPrefab);
         callGhost.SetActive(false);
 
-        validGroup = Ball.Group.SOLID; // game.GetCurrentGroup();
+        pocketGhost = GameObject.Instantiate(game.PocketGhostPrefab);
+        pocketGhost.SetActive(false);
+
+        validGroup = game.GetCurrentGroup();
         isBallSet = false;
     }
 
@@ -34,6 +41,7 @@ public class Call : GameState {
 
     public override void Exit() {
         GameObject.Destroy(callGhost);
+        GameObject.Destroy(pocketGhost);
 
         game.CallUI.Visible = false;
         game.CallUI.Reset.visible = false;
@@ -54,18 +62,24 @@ public class Call : GameState {
                 callGhost.SetActive(false);
         }
         if (isBallSet && !isPocketSet) {
+            if (MovePocket())
+                pocketGhost.SetActive(true);
+            else
+                pocketGhost.SetActive(false);
         }
     }
 
     void Select() {
-        if (!isBallSet && selectedBall) {
+        if (!isBallSet && call.Ball) {
             isBallSet = true;
 
             game.CallUI.Reset.visible = true;
+        }
+        if (isBallSet && call.Pocket) {
+            isPocketSet = true;
+
             game.CallUI.Call.visible = true;
         }
-        if (isBallSet && selectedPocket)
-            isPocketSet = true;
     }
 
     bool MoveBall() {
@@ -75,10 +89,12 @@ public class Call : GameState {
         Ball ball = null;
 
         if (Physics.Raycast(ray, out RaycastHit hit, 10, game.TableLayer)) {
-            List<Collider> colliders = new List<Collider>(Physics.OverlapSphere(hit.point, 0.02f, ~(game.TableLayer | game.CueBallGhostLayer)));
+            List<Collider> colliders = new List<Collider>(Physics.OverlapSphere(hit.point, 0.02f, ~(game.TableLayer)));
 
-            if (colliders.Count == 0)
+            if (colliders.Count == 0) {
+                call.Ball = null;
                 return false;
+            }
 
             var balls = new List<Ball>();
 
@@ -98,30 +114,58 @@ public class Call : GameState {
                 ball = balls[0];
         }
 
-        if (!ball)
+        if (!ball) {
+            call.Ball = null;
             return false;
+        }
 
-        selectedBall = ball;
+        call.Ball = ball;
         callGhost.transform.position = ball.transform.position;
         return true;
     }
 
     bool MovePocket() {
+        Vector3 mousePosition = Input.mousePosition;
+        Ray ray = game.Overhead.ScreenPointToRay(mousePosition);
+
+        Pocket pocket = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 10, game.TableLayer)) {
+            Collider[] colliders = Physics.OverlapSphere(hit.point, 0.05f, ~(game.TableLayer));
+
+            if (colliders.Length > 0)
+                pocket = colliders[0].GetComponent<Pocket>();
+        }
+
+        if (!pocket) {
+            call.Pocket = null;
+            return false;
+        }
+
+        call.Pocket = pocket;
+        pocketGhost.transform.position = pocket.transform.position;
         return true;
     }
 
     void CallShot() {
-        game.State = new Shot(game, selectedBall);
+        game.State = new Shot(game, call);
     }
 
     void Reset() {  
         isBallSet = false;
+        isPocketSet = false;
+
+        call.Ball = null;
+        call.Pocket = null;
+
+        callGhost.SetActive(false);
+        pocketGhost.SetActive(false);
 
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
     }
 
     void Safety() {
-        game.State = new Shot(game, null);
+        game.State = new Shot(game);
     }
 }

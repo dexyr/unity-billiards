@@ -22,6 +22,6 @@ public class Menu : GameState {
         game.ClearTable();
         game.SetTable();
 
-        game.State = new Call(game);
+        game.State = new Shot(game);
     }
 }

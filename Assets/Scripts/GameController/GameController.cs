@@ -36,8 +36,8 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] GameObject ballSetPrefab, cueBallPrefab;
 
-    [SerializeField] public GameObject CueBallGhostPrefab, CallGhostPrefab;
-    [SerializeField] public LayerMask TableLayer, CueBallGhostLayer;
+    [SerializeField] public GameObject CueBallGhostPrefab, CallGhostPrefab, PocketGhostPrefab;
+    [SerializeField] public LayerMask TableLayer, CueBallGhostLayer, PocketLayer;
 
     public List<Ball> Pocketed { get; private set; } = new List<Ball>();
     public List<Ball> Solids = new List<Ball>();

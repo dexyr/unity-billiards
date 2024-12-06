@@ -42,9 +42,9 @@ public class TurnUI : MonoBehaviour {
         }
     }
 
-    public void SetCall(Ball ball) {
-        if (ball)
-            Call.text = $"【コール】{ball.number} →（ポケットは実装中）";
+    public void SetCall(CallInfo? call=null) {
+        if (call != null)
+            Call.text = $"【コール】{call?.Ball.number}";
         else
             Call.text = $"【コール】セーフティ";
     }

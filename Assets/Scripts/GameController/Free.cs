@@ -140,7 +140,10 @@ public class Free : GameState {
         rigidbody.velocity = Vector3.zero;
         rigidbody.Sleep();
 
-        game.State = new Call(game);
+        if (game.SolidsPlayer == GameController.Players.NONE)
+            game.State = new Shot(game);
+        else
+            game.State = new Call(game);
     }
 
     public void Cancel() {

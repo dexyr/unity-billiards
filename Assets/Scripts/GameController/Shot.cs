@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Shot : GameState {
     bool isOverhead;
-    Ball call;
+    CallInfo? call;
 
-    public Shot(GameController game, Ball call) : base(game) {
+    public Shot(GameController game, CallInfo? call=null) : base(game) {
         this.call = call;
         isOverhead = false;
     }
@@ -17,8 +17,11 @@ public class Shot : GameState {
         game.ShotCamera.gameObject.SetActive(true);
 
         game.TurnUI.Refresh(game.CurrentPlayer, game.GetCurrentGroup());
-        game.TurnUI.SetCall(call);
-        game.TurnUI.Call.visible = true;
+        
+        if (game.SolidsPlayer != GameController.Players.NONE) {
+            game.TurnUI.SetCall(call);
+            game.TurnUI.Call.visible = true;
+        }
 
         game.ShotUI.Visible = true;
 
@@ -50,6 +53,6 @@ public class Shot : GameState {
     }
 
     void StickCollided(float velocity) {
-        game.State = new Simulation(game);
+        game.State = new Simulation(game, call);
     }
 }

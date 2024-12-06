@@ -5,8 +5,12 @@ public class Simulation : GameState {
     float timer = 0; // ボールが当たった瞬間(movingに入っていないところ)に状態移動しないために;
     public List<Moving> Moving = new List<Moving>();
     List<Ball> pocketedNow = new List<Ball>();
+    Ball firstTouched;
+    CallInfo? call;
 
-    public Simulation(GameController game) : base(game) {}
+    public Simulation(GameController game, CallInfo? call=null) : base(game) {
+        this.call = call;
+    }
 
     public override void Enter() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -41,9 +45,9 @@ public class Simulation : GameState {
             return;
 
         if (game.IsEightShot())
-            game.State = new EightShotResult(game, pocketedNow);
+            game.State = new EightShotResult(game, pocketedNow, call);
         else
-            game.State = new ShotResult(game, pocketedNow);
+            game.State = new ShotResult(game, pocketedNow, firstTouched, call);
 
     }
 
@@ -85,6 +89,9 @@ public class Simulation : GameState {
     }
 
     void CueBallCollided(Ball ball) {
+        if (!firstTouched)
+            firstTouched = ball;
+
         Ball.Group group = Ball.GetGroup(ball.number);
         game.Log($"ボール{ball.number}(group {group})がキューボールに当てった");
     }
