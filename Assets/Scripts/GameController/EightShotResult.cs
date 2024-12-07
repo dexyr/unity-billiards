@@ -13,8 +13,8 @@ public class EightShotResult : GameState {
     public override void Exit() {}
 
     public override void Update() {
-        if (IsCueScratch()) {
-            game.State = new End(game, game.GetOtherPlayer());
+        if (IsEightPocketed() && IsCueScratch()) {
+            game.State = new End(game, game.OtherPlayer);
             return;
         }
         

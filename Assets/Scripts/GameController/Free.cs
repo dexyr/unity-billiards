@@ -19,6 +19,9 @@ public class Free : GameState {
     }
 
     public override void Enter() {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         cueBallGhost = GameObject.Instantiate(game.CueBallGhostPrefab);
 
         valid = cueBallGhost.GetComponent<Renderer>().material.color;
@@ -28,10 +31,7 @@ public class Free : GameState {
 
         game.CueBall.gameObject.SetActive(false);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        game.TurnUI.Refresh(game.CurrentPlayer, game.GetCurrentGroup());
+        game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
 
         game.FreeUI.Visible = true;
         game.FreeUI.Confirm.visible = false;

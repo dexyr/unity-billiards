@@ -16,7 +16,7 @@ public class Shot : GameState {
         game.StickController.gameObject.SetActive(true);
         game.ShotCamera.gameObject.SetActive(true);
 
-        game.TurnUI.Refresh(game.CurrentPlayer, game.GetCurrentGroup());
+        game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
         
         if (game.SolidsPlayer != GameController.Players.NONE) {
             game.TurnUI.SetCall(call);

@@ -5,6 +5,7 @@ public class Simulation : GameState {
     float timer = 0; // É{Å[ÉãÇ™ìñÇΩÇ¡ÇΩèuä‘(movingÇ…ì¸Ç¡ÇƒÇ¢Ç»Ç¢Ç∆Ç±ÇÎ)Ç…èÛë‘à⁄ìÆÇµÇ»Ç¢ÇΩÇﬂÇ…;
     public List<Moving> Moving = new List<Moving>();
     List<Ball> pocketedNow = new List<Ball>();
+    List<Ball> cushionBalls = new List<Ball>();
     Ball firstTouched;
     CallInfo? call;
 
@@ -19,6 +20,9 @@ public class Simulation : GameState {
         foreach (Pocket p in game.Pockets)
             p.PocketEntered += PocketEntered;
 
+        foreach (var c in game.Cushions)
+            c.CushionHit += CushionHit;
+
         foreach (var m in GameObject.FindObjectsOfType<Moving>())
             m.MotionUpdated += BallMotion;
 
@@ -28,6 +32,9 @@ public class Simulation : GameState {
     public override void Exit() {
         foreach (Pocket p in game.Pockets)
             p.PocketEntered -= PocketEntered;
+
+        foreach (var c in game.Cushions)
+            c.CushionHit -= CushionHit;
 
         foreach (var m in GameObject.FindObjectsOfType<Moving>())
             m.MotionUpdated -= BallMotion;
@@ -44,11 +51,12 @@ public class Simulation : GameState {
         if (Moving.Count > 0)
             return;
 
-        if (game.IsEightShot())
+        if (game.IsBreak)
+            game.State = new BreakShotResult(game, pocketedNow, cushionBalls);
+        else if (game.IsEightShot)
             game.State = new EightShotResult(game, pocketedNow, call);
         else
-            game.State = new ShotResult(game, pocketedNow, firstTouched, call);
-
+            game.State = new ShotResult(game, pocketedNow, cushionBalls, firstTouched, call);
     }
 
     void BallMotion(Moving movingObject, bool isMoving) {
@@ -60,6 +68,13 @@ public class Simulation : GameState {
         }
         else
             Moving.Remove(movingObject);
+    }
+
+    void CushionHit(Ball ball) {
+        if (ball.number == -1 || cushionBalls.Contains(ball))
+            return;
+
+        cushionBalls.Add(ball);
     }
 
     void PocketEntered(Ball ball) {

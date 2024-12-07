@@ -22,7 +22,7 @@ public class Call : GameState {
         pocketGhost = GameObject.Instantiate(game.PocketGhostPrefab);
         pocketGhost.SetActive(false);
 
-        validGroup = game.GetCurrentGroup();
+        validGroup = game.CurrentGroup;
         isBallSet = false;
     }
 

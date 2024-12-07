@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class ShotResult : GameState {
     List<Ball> pocketedNow;
+    List<Ball> cushionBalls;
     Ball firstTouched;
     CallInfo? call;
 
     GameState next;
 
-    public ShotResult(GameController game, List<Ball> pocketedNow, Ball firstTouched, CallInfo? call=null) : base(game) {
+    public ShotResult(GameController game, List<Ball> pocketedNow, List<Ball> cushionBalls, Ball firstTouched, CallInfo? call=null) : base(game) {
         this.pocketedNow = pocketedNow;
+        this.cushionBalls = cushionBalls;
         this.firstTouched = firstTouched;
         this.call = call;
     }
@@ -27,8 +29,6 @@ public class ShotResult : GameState {
     }
 
     public override void Exit() {
-        game.IsBreak = false;
-
         game.ShotResultUI.Visible = false;
         game.ShotResultUI.Results.Clear();
 
@@ -36,9 +36,6 @@ public class ShotResult : GameState {
     }
 
     void CalculateResults() {
-        Ball.Group goodGroup = game.GetCurrentGroup();
-        Ball.Group badGroup = goodGroup == Ball.Group.SOLID ? Ball.Group.STRIPE : Ball.Group.SOLID;
-
         game.ShotResultUI.Results.Add($"ボールが{pocketedNow.Count}個ポケットしました。");
 
         if (Is8Scratch()) {
@@ -64,7 +61,7 @@ public class ShotResult : GameState {
             return;
         }
 
-        if (IsNoHit(goodGroup)) {
+        if (IsNoHit(game.CurrentGroup)) {
             game.ShotResultUI.Results.Add("ノーヒットファウルしました。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
             game.ShotResultUI.Results.Add("フリーボールです。");
@@ -84,13 +81,31 @@ public class ShotResult : GameState {
             return;
         }
 
-        if (IsGroupScratch(badGroup)) {
-            game.ShotResultUI.Results.Add("グループ相違クラッチしました。");
+        if (pocketedNow.Count == 0) {
+            game.ShotResultUI.Results.Add("ボールが1個もポケットできませんでした。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
-            game.ShotResultUI.Results.Add("フリーボールです。");
 
             game.ChangeTurn();
-            next = new Free(game);
+
+            if (game.IsOpen)
+                next = new Shot(game);
+            else
+                next = new Call(game);
+
+            return;
+        }
+
+        if (IsGroupScratch(game.OtherGroup)) {
+            game.ShotResultUI.Results.Add("グループの相違でポケットしました。");
+            game.ShotResultUI.Results.Add("ターンが交代します。");
+
+            game.ChangeTurn();
+
+            if (game.IsOpen)
+                next = new Shot(game);
+            else
+                next = new Call(game);
+
             return;
         }
 
@@ -103,24 +118,14 @@ public class ShotResult : GameState {
             return;
         }
 
-        if (!game.IsBreak && game.SolidsPlayer == GameController.Players.NONE && pocketedNow.Count > 0) {
+        if (game.IsOpen && pocketedNow.Count > 0) {
             SetGroup();
 
-            // game.ShotResultUI.Results.Add("ターンが交代します。");
-
-            // game.ChangeTurn();
             next = new Call(game);
             return;
         }
 
-        if (game.IsBreak && pocketedNow.Count > 0) {
-            game.ShotResultUI.Results.Add("ブレイク成功でグループ選択します。");
-
-            next = new Group(game, pocketedNow);
-            return;
-        }
-
-        if (game.SolidsPlayer != GameController.Players.NONE) {
+        if (!game.IsOpen) {
             next = new Call(game);
             return;
         }
@@ -152,7 +157,12 @@ public class ShotResult : GameState {
         if (call == null)
             return false;
 
-        return !pocketedNow.Contains(call?.Ball);
+        if (pocketedNow.Contains(call?.Ball))
+            return false;
+
+        var cueBall = game.CueBall.GetComponent<Ball>();
+
+        return !(cushionBalls.Contains(cueBall) || cushionBalls.Contains(call?.Ball));
     }
 
     bool IsCueScratch() {
@@ -160,20 +170,18 @@ public class ShotResult : GameState {
     }
 
     bool IsGroupScratch(Ball.Group badGroup) {
-        if (game.SolidsPlayer == GameController.Players.NONE)
+        if (game.IsOpen)
             return false;
 
         return pocketedNow.Find(b => Ball.GetGroup(b.number) == badGroup) != null;
     }
 
     bool IsSafety() {
-        return game.SolidsPlayer != GameController.Players.NONE && call == null;
+        return !game.IsOpen && call == null;
     }
 
     void SetGroup() {
         game.ShotResultUI.Results.Add("グループが決まりました。");
-
-        GameController.Players otherPlayer = game.GetOtherPlayer();
 
         if (Ball.GetGroup(pocketedNow[0].number) == Ball.Group.SOLID) {
             game.SolidsPlayer = game.CurrentPlayer;
@@ -183,7 +191,7 @@ public class ShotResult : GameState {
         }
         else {
             game.ShotResultUI.Results.Add("グループはストライプです。");
-            game.SolidsPlayer = otherPlayer;
+            game.SolidsPlayer = game.OtherPlayer;
 
             game.TurnUI.Refresh(game.CurrentPlayer, Ball.Group.STRIPE);
         }

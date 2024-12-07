@@ -32,6 +32,7 @@ public class End : GameState {
     public void Replay() {
         game.ClearTable();
         game.SetTable();
+        game.CurrentPlayer = GameController.Players.PLAYER1;
 
         game.State = new Shot(game);
     }

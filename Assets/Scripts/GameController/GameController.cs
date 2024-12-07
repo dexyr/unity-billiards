@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] public MenuUI MenuUI;
     [SerializeField] public TurnUI TurnUI;
+    [SerializeField] public BreakUI BreakUI;
     [SerializeField] public CallUI CallUI;
     [SerializeField] public ShotUI ShotUI;
     [SerializeField] public ShotResultUI ShotResultUI;
@@ -33,6 +34,7 @@ public class GameController : MonoBehaviour {
     GameObject ballSet;
     public List<Ball> Balls = new List<Ball>();
     public List<Pocket> Pockets = new List<Pocket>();
+    public List<Cushion> Cushions = new List<Cushion>();
 
     [SerializeField] GameObject ballSetPrefab, cueBallPrefab;
 
@@ -45,9 +47,6 @@ public class GameController : MonoBehaviour {
     public List<Ball> Player1Balls = new List<Ball>();
     public List<Ball> Player2Balls = new List<Ball>();
 
-    public bool IsBreak;
-    public Players SolidsPlayer = Players.NONE;
-
     private GameState state;
     public GameState State {
         get => state;
@@ -59,28 +58,41 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    public Players CurrentPlayer { get; private set; } = Players.NONE;
-    public void ChangeTurn() {
-        switch (CurrentPlayer) {
-        case Players.NONE:
-            CurrentPlayer = Players.PLAYER1;
-            break;
+    public Players CurrentPlayer = Players.NONE;
+    public Players OtherPlayer {
+        get => CurrentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
+    }
 
-        case Players.PLAYER1:
-            CurrentPlayer = Players.PLAYER2;
-            break;
+    public Ball.Group CurrentGroup {
+        get => SolidsPlayer == Players.NONE ? Ball.Group.NONE
+            : SolidsPlayer == CurrentPlayer ? Ball.Group.SOLID
+            : Ball.Group.STRIPE;
+    }
+    public Ball.Group OtherGroup {
+        get => CurrentGroup == Ball.Group.NONE ? Ball.Group.NONE
+            : CurrentGroup == Ball.Group.SOLID ? Ball.Group.STRIPE
+            : Ball.Group.SOLID;
+    }
 
-        case Players.PLAYER2:
-            CurrentPlayer = Players.PLAYER1;
-            break;
+    public bool IsBreak;
+
+    public Players SolidsPlayer = Players.NONE;
+    public bool IsOpen {
+        get => SolidsPlayer == Players.NONE;
+    }
+
+    public bool IsEightShot {
+        get {
+            return SolidsPlayer == CurrentPlayer ? Solids.Count == 0 : Stripes.Count == 0;
         }
-
-        TurnChanged?.Invoke(CurrentPlayer);
     }
 
     public void Start() {
         foreach (Pocket p in FindObjectsByType<Pocket>(FindObjectsSortMode.None))
             Pockets.Add(p);
+
+        foreach (Cushion c in FindObjectsByType<Cushion>(FindObjectsSortMode.None))
+            Cushions.Add(c);
 
         StickController = FindObjectOfType<CueStickController>();
         Stick = FindObjectOfType<CueStick>();
@@ -94,6 +106,7 @@ public class GameController : MonoBehaviour {
 
         ShotResultUI.Visible = false;
         CallUI.Visible = false;
+        BreakUI.Visible = false;
         ShotUI.Visible = false;
         TurnUI.Visible = false;
         TurnUI.Call.visible = false;
@@ -105,6 +118,10 @@ public class GameController : MonoBehaviour {
 
         state = new Menu(this);
         state.Enter();
+    }
+
+    public void Update() {
+        state.Update();
     }
 
     public void SetTable() {
@@ -126,7 +143,6 @@ public class GameController : MonoBehaviour {
 
         StickController.Target = CueBall.gameObject;
 
-        CurrentPlayer = Players.PLAYER1;
         IsBreak = true;
     }
 
@@ -147,26 +163,22 @@ public class GameController : MonoBehaviour {
         StickController.Target = null;
     }
 
-    public void Update() {
-        state.Update();
-    }
+    public void ChangeTurn() {
+        switch (CurrentPlayer) {
+        case Players.NONE:
+            CurrentPlayer = Players.PLAYER1;
+            break;
 
-    public Players GetOtherPlayer() {
-        return CurrentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
-    }
+        case Players.PLAYER1:
+            CurrentPlayer = Players.PLAYER2;
+            break;
 
-    public Ball.Group GetCurrentGroup() {
-        if (SolidsPlayer == Players.NONE)
-            return Ball.Group.NONE;
+        case Players.PLAYER2:
+            CurrentPlayer = Players.PLAYER1;
+            break;
+        }
 
-        return SolidsPlayer == CurrentPlayer ? Ball.Group.SOLID : Ball.Group.STRIPE;
-    }
-
-    public bool IsEightShot() {
-        if (SolidsPlayer == CurrentPlayer)
-            return Solids.Count == 0;
-        else
-            return Stripes.Count == 0;
+        TurnChanged?.Invoke(CurrentPlayer);
     }
 
     public void Log(string message) {

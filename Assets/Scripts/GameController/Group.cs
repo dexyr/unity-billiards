@@ -41,7 +41,7 @@ public class Group : GameState {
     public override void Update() {}
 
     public void ChooseGroup(Ball.Group group) {
-        GameController.Players otherPlayer = game.GetOtherPlayer();
+        GameController.Players otherPlayer = game.OtherPlayer;
 
         if (group == Ball.Group.SOLID) {
             game.SolidsPlayer = game.CurrentPlayer;
