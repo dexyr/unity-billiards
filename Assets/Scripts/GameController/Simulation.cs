@@ -78,8 +78,10 @@ public class Simulation : GameState {
     }
 
     void PocketEntered(Ball ball) {
+        if (!ball.gameObject.activeSelf)
+            return;
+
         Ball.Group group = Ball.GetGroup(ball.number);
-        game.Log($"ボール{ball.number}(group {group})がクッションに当てった");
 
         pocketedNow.Add(ball);
 
@@ -92,7 +94,7 @@ public class Simulation : GameState {
 
         game.Pocketed.Add(ball);
 
-        if (game.CurrentPlayer == GameController.Players.PLAYER1)
+        if (game.CurrentPlayer == Players.PLAYER1)
             game.Player1Balls.Add(ball);
         else
             game.Player2Balls.Add(ball);
@@ -108,6 +110,5 @@ public class Simulation : GameState {
             firstTouched = ball;
 
         Ball.Group group = Ball.GetGroup(ball.number);
-        game.Log($"ボール{ball.number}(group {group})がキューボールに当てった");
     }
 }

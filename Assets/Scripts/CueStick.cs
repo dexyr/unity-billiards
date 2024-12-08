@@ -1,13 +1,13 @@
 using UnityEngine;
 
 public class CueStick : MonoBehaviour {
-    public delegate void StickCollisionHandler(float hitVelocity);
+    public delegate void StickCollisionHandler(Collision collision, CueBall cueBall);
     public event StickCollisionHandler StickCollided;
 
     CapsuleCollider capsuleCollider;
     BoxCollider boxCollider;
     new Rigidbody rigidbody;
-    Vector3 originalPosition;
+    public Vector3 OriginalPosition;
     Vector3 originalRotation;
 
     void Awake() {
@@ -15,7 +15,7 @@ public class CueStick : MonoBehaviour {
         boxCollider = GetComponent<BoxCollider>();
         rigidbody = GetComponent<Rigidbody>();
 
-        originalPosition = transform.localPosition;
+        OriginalPosition = transform.localPosition;
         originalRotation = transform.localEulerAngles;
     }
 
@@ -24,7 +24,7 @@ public class CueStick : MonoBehaviour {
     }
 
     void OnDisable() {
-        resetPosition();
+        ResetPosition();
     }
 
     void OnCollisionEnter(Collision collision) {
@@ -33,14 +33,19 @@ public class CueStick : MonoBehaviour {
         if (!cueBall)
             return;
 
+        if (rigidbody.isKinematic)
+            return;
+
         Freeze();
-        StickCollided?.Invoke(collision.relativeVelocity.magnitude);
+        StickCollided?.Invoke(collision, cueBall);
     }
 
     void Unfreeze() {
         capsuleCollider.enabled = true;
         boxCollider.enabled = true;
         rigidbody.isKinematic = false;
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.Sleep();
     }
 
     void Freeze() {
@@ -49,8 +54,8 @@ public class CueStick : MonoBehaviour {
         rigidbody.isKinematic = true;
     }
 
-    void resetPosition() {
-        transform.localPosition = originalPosition;
+    public void ResetPosition() {
+        transform.localPosition = OriginalPosition;
         transform.localEulerAngles = originalRotation;
     }
 }

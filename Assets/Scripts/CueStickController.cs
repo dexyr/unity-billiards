@@ -23,22 +23,32 @@ public class CueStickController : MonoBehaviour {
 
     public enum ShotState { SHOT, AIM, LOOK };
 
+    float delay = 0;
+
     void Awake() {
         transform.localEulerAngles = new Vector3((angleMax + angleMin) / 2, 0, 0);
         cueStick = GetComponentInChildren<CueStick>();
-
-        cueStick.StickCollided += StickCollided;
-    }
-
-    void OnDisable() {
-        ResetAim();
+        cueStick.StickCollided += CueStickHit;
     }
 
     void OnDestroy() {
-        cueStick.StickCollided -= StickCollided;
+        cueStick.StickCollided -= CueStickHit;
+    }
+
+    void OnEnable() {
+        delay = 0;
+    }
+
+    void OnDisable() {
+        aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
     }
 
     void Update() {
+        delay += Time.deltaTime;
+
+        if (delay < 0.2f)
+            return;
+
         stickSlide = 0;
 
         var state = ShotState.AIM;
@@ -80,13 +90,23 @@ public class CueStickController : MonoBehaviour {
         if (rigidbody.velocity.magnitude < 0.01f)
             rigidbody.velocity = Vector3.zero;
 
-        rigidbody.AddRelativeForce(new Vector3(0, stickSlide, 0), ForceMode.Impulse);
+        float currentZ = cueStick.transform.localPosition.z;
+        float originalZ = cueStick.OriginalPosition.z;
+
+        if (currentZ > originalZ - aimDistanceMin - 0.0001f) {
+            rigidbody.AddRelativeForce(new Vector3(0, stickSlide, 0), ForceMode.Impulse);
+            stickSlide = 0;
+        }
+        else {
+            rigidbody.velocity = Vector3.zero;
+            cueStick.ResetPosition();
+            cueStick.transform.Translate(new Vector3(0, -aimDistanceMin, 0), Space.Self);
+        }
     }
 
-    public void StickCollided(float velocity) {}
-
-    public void ResetAim() {
-        aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
+    public void CueStickHit(Collision collision, CueBall cueBall) {
+        ContactPoint contact = collision.GetContact(0);
+        cueBall.GetComponent<Rigidbody>().AddForceAtPosition(transform.forward * collision.relativeVelocity.magnitude / 300, contact.point, ForceMode.Impulse);
     }
 
     void Shot() {

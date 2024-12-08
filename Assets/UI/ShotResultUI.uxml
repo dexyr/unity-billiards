@@ -7,7 +7,7 @@
                 <ui:Label tabindex="-1" text="〇〇でした。" parse-escape-sequences="true" display-tooltip-when-elided="true" name="result" class="subheading" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center;">
+        <ui:VisualElement style="flex-grow: initial; align-items: center; justify-content: center;">
             <ui:Button text="はい" parse-escape-sequences="true" display-tooltip-when-elided="true" name="confirm" />
         </ui:VisualElement>
     </ui:VisualElement>

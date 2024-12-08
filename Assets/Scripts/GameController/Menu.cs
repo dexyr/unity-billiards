@@ -21,7 +21,8 @@ public class Menu : GameState {
     public void StartGame() {
         game.ClearTable();
         game.SetTable();
-        game.CurrentPlayer = GameController.Players.PLAYER1;
+        game.CurrentPlayer = Players.PLAYER1;
+        game.IsBreak = true;
 
         game.State = new Shot(game);
     }

@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class End : GameState {
-    GameController.Players winner;
+    Players winner;
 
-    public End(GameController game, GameController.Players winner) : base(game) {
+    public End(GameController game, Players winner) : base(game) {
         this.winner = winner;
     }
 
@@ -32,7 +32,8 @@ public class End : GameState {
     public void Replay() {
         game.ClearTable();
         game.SetTable();
-        game.CurrentPlayer = GameController.Players.PLAYER1;
+        game.CurrentPlayer = Players.PLAYER1;
+        game.IsBreak = true;
 
         game.State = new Shot(game);
     }

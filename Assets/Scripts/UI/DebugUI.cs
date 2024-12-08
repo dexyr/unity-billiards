@@ -15,8 +15,6 @@ public class DebugUI : MonoBehaviour {
 
         gameController.LogUpdated += UpdateLogText;
         gameController.StateChanged += UpdateStateText;
-        // gameController.TurnChanged += UpdateTurnText;
-        cueStick.StickCollided += UpdateHitVelocity;
 
         var uiDocument = GetComponent<UIDocument>();
         debug = (Label) uiDocument.rootVisualElement.Query("debug");
@@ -33,8 +31,6 @@ public class DebugUI : MonoBehaviour {
     public void OnDestroy() {
         gameController.LogUpdated -= UpdateLogText;
         gameController.StateChanged -= UpdateStateText;
-        // gameController.TurnChanged -= UpdateTurnText;
-        cueStick.StickCollided -= UpdateHitVelocity;
     }
 
     public void Start() {

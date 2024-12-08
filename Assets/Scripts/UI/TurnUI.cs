@@ -21,8 +21,8 @@ public class TurnUI : MonoBehaviour {
         Call = (Label) uiDocument.rootVisualElement.Query("call");
     }
 
-    public void Refresh(GameController.Players player, Ball.Group group) {
-        if (player == GameController.Players.PLAYER1)
+    public void Refresh(Players player, Ball.Group group) {
+        if (player == Players.PLAYER1)
             this.player.text = "プレイヤー1";
         else
             this.player.text = "プレイヤー2";

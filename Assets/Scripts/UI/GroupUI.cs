@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class GroupMenuUI : MonoBehaviour {
+public class GroupUI : MonoBehaviour {
     public delegate void GroupChoiceHandler(Ball.Group group);
     public event GroupChoiceHandler GroupChosen;
 

@@ -2,45 +2,6 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour {
     public enum Group { NONE, SOLID, STRIPE, EIGHT, CUE };
-    static Color purple = new Color(0.5f, 0f, 0.5f);
-    static Color orange = new Color(1f, 0.4f, 0f);
-    static Color maroon = new Color(0.7f, 0f, 0f);
-
-    static Color[] colors = {
-        Color.yellow,
-        Color.blue,
-        Color.red,
-        purple,
-        orange,
-        Color.green,
-        maroon,
-        Color.black,
-        Color.yellow,
-        Color.blue,
-        Color.red,
-        purple,
-        orange,
-        Color.green,
-        maroon
-    };
-
-    [field: SerializeField] public int number { get; private set; }
-
-    void Start() {
-        // SetColor();
-    }
-
-    void SetColor() {
-        var material = GetComponent<Renderer>().material;
-
-        if (number < 1 || number > 15) {
-            material.color = Color.magenta;
-            return;
-        }
-
-        material.color = colors[number - 1];
-    }
-
     static public Group GetGroup(int number) {
         if (number > 0 && number < 8)
             return Group.SOLID;
@@ -52,5 +13,34 @@ public class Ball : MonoBehaviour {
             return Group.CUE;
 
         return Group.NONE;
+    }
+
+    [field: SerializeField] public int number { get; private set; }
+    [SerializeField] float staticFriction;
+    [SerializeField] float dynamicFriction;
+    [SerializeField] public float Bounce;
+    [SerializeField] float minBounce;
+
+    PhysicMaterial physicMaterial;
+
+    new Rigidbody rigidbody;
+
+    void Awake() {
+        physicMaterial = new PhysicMaterial();
+        physicMaterial.dynamicFriction = dynamicFriction;
+        physicMaterial.staticFriction = staticFriction;
+        physicMaterial.bounciness = minBounce;
+
+        SphereCollider sphereCollider = GetComponent<SphereCollider>();
+        sphereCollider.material = physicMaterial;
+
+        rigidbody = GetComponent<Rigidbody>();
+        rigidbody.maxAngularVelocity = float.MaxValue;
+    }
+    void FixedUpdate() {
+        Bounce = minBounce + rigidbody.velocity.magnitude * Time.fixedDeltaTime * 5;
+        Bounce = Mathf.Clamp(Bounce, minBounce, 1);
+
+        physicMaterial.bounciness = Bounce;
     }
 }

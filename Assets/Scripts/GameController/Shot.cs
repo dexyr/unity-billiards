@@ -16,14 +16,15 @@ public class Shot : GameState {
         game.StickController.gameObject.SetActive(true);
         game.ShotCamera.gameObject.SetActive(true);
 
+        game.HintUI.Visible = true;
+        game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ" });
+
         game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
         
-        if (game.SolidsPlayer != GameController.Players.NONE) {
+        if (game.SolidsPlayer != Players.NONE) {
             game.TurnUI.SetCall(call);
             game.TurnUI.Call.visible = true;
         }
-
-        game.ShotUI.Visible = true;
 
         game.Stick.StickCollided += StickCollided;
     }
@@ -32,8 +33,8 @@ public class Shot : GameState {
         game.StickController.gameObject.SetActive(false);
         game.ShotCamera.gameObject.SetActive(false);
 
+        game.HintUI.Visible = false;
         game.TurnUI.Call.visible = false;
-        game.ShotUI.Visible = false;
 
         game.Stick.StickCollided -= StickCollided;
     }
@@ -46,13 +47,13 @@ public class Shot : GameState {
             game.ShotCamera.gameObject.SetActive(!isOverhead);
 
             if (isOverhead)
-                game.ShotUI.SetHint("(C) - ショットカメラ");
+                game.HintUI.SetHint(new string[] { "(C) - ショットカメラ" });
             else
-                game.ShotUI.SetHint("(C) - オーバーヘッドカメラ");
+                game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ" });
         }
     }
 
-    void StickCollided(float velocity) {
+    void StickCollided(Collision collision, CueBall cueBall) {
         game.State = new Simulation(game, call);
     }
 }

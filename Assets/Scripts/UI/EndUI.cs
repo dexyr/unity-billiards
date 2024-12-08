@@ -24,8 +24,8 @@ public class EndUI : MonoBehaviour {
         player2 = (Label) uiDocument.rootVisualElement.Query("player2");
     }
 
-    public void Refresh(GameController.Players winner, List<Ball> player1, List<Ball> player2) {
-        if (winner == GameController.Players.PLAYER1)
+    public void Refresh(Players winner, List<Ball> player1, List<Ball> player2) {
+        if (winner == Players.PLAYER1)
             this.winner.text = "プレイヤー1の勝ち！";
         else
             this.winner.text = "プレイヤー2の勝ち！";

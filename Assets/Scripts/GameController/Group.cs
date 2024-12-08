@@ -26,22 +26,22 @@ public class Group : GameState {
                 stripes.Add(b);
         }
 
-        game.GroupMenuUI.Refresh(solids, stripes);
-        game.GroupMenuUI.Visible = true;
+        game.GroupUI.Refresh(solids, stripes);
+        game.GroupUI.Visible = true;
 
-        game.GroupMenuUI.GroupChosen += ChooseGroup;
+        game.GroupUI.GroupChosen += ChooseGroup;
     }
 
     public override void Exit() {
-        game.GroupMenuUI.Visible = false;
+        game.GroupUI.Visible = false;
 
-        game.GroupMenuUI.GroupChosen -= ChooseGroup;
+        game.GroupUI.GroupChosen -= ChooseGroup;
     }
 
     public override void Update() {}
 
     public void ChooseGroup(Ball.Group group) {
-        GameController.Players otherPlayer = game.OtherPlayer;
+        Players otherPlayer = game.OtherPlayer;
 
         if (group == Ball.Group.SOLID) {
             game.SolidsPlayer = game.CurrentPlayer;

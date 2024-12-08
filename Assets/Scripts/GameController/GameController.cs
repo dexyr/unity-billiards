@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
-    public enum Players { NONE, PLAYER1, PLAYER2 } // Listのほうがフレキシブルだが
+public enum Players { NONE, PLAYER1, PLAYER2 } // Listのほうがフレキシブルだが
+public enum CameraStates { OVERHEAD, CUE, BALL }
 
+public class GameController : MonoBehaviour {
     public delegate void LogUpdateHandler(string message);
     public event LogUpdateHandler LogUpdated;
 
@@ -13,13 +14,15 @@ public class GameController : MonoBehaviour {
     public delegate void TurnChangeHandler(Players turn);
     public event TurnChangeHandler TurnChanged;
 
+    [SerializeField] float simulationSpeed;
+
     [SerializeField] public MenuUI MenuUI;
     [SerializeField] public TurnUI TurnUI;
+    [SerializeField] public HintUI HintUI;
     [SerializeField] public BreakUI BreakUI;
     [SerializeField] public CallUI CallUI;
-    [SerializeField] public ShotUI ShotUI;
     [SerializeField] public ShotResultUI ShotResultUI;
-    [SerializeField] public GroupMenuUI GroupMenuUI;
+    [SerializeField] public GroupUI GroupUI;
     [SerializeField] public EndUI EndUI;
     [SerializeField] public FreeUI FreeUI;
 
@@ -106,11 +109,11 @@ public class GameController : MonoBehaviour {
 
         ShotResultUI.Visible = false;
         CallUI.Visible = false;
+        HintUI.Visible = false;
         BreakUI.Visible = false;
-        ShotUI.Visible = false;
         TurnUI.Visible = false;
         TurnUI.Call.visible = false;
-        GroupMenuUI.Visible = false;
+        GroupUI.Visible = false;
         FreeUI.Visible = false;
         EndUI.Visible = false;
 
@@ -118,10 +121,21 @@ public class GameController : MonoBehaviour {
 
         state = new Menu(this);
         state.Enter();
+
+        Time.timeScale = simulationSpeed;
     }
 
     public void Update() {
         state.Update();
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            ClearTable();
+            SetTable();
+            CurrentPlayer = Players.PLAYER1;
+            IsBreak = true;
+
+            State = new Menu(this);
+        }
     }
 
     public void SetTable() {

@@ -36,7 +36,10 @@ public class Free : GameState {
         game.FreeUI.Visible = true;
         game.FreeUI.Confirm.visible = false;
         game.FreeUI.Cancel.visible = false;
-        game.FreeUI.SetHint(new string[] { "(C) - ボールカメラ" });
+
+        game.HintUI.Visible = true;
+        game.HintUI.SetHint(new string[] { "(C) - ボールカメラ" });
+
         game.TargetCamera.Target = game.Balls[0].gameObject;
 
         game.FreeUI.Confirm.clicked += Confirm;
@@ -51,6 +54,8 @@ public class Free : GameState {
         game.FreeUI.Visible = false;
         game.FreeUI.Confirm.visible = false;
         game.FreeUI.Cancel.visible = false;
+
+        game.HintUI.Visible = false;
 
         game.FreeUI.Confirm.clicked -= Confirm;
         game.FreeUI.Cancel.clicked -= Cancel;
@@ -105,7 +110,7 @@ public class Free : GameState {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            game.FreeUI.SetHint(new string[] {"(C) - ボールカメラ"});
+            game.HintUI.SetHint(new string[] {"(C) - ボールカメラ"});
 
             if (isSet) {
                 game.FreeUI.Confirm.visible = true;
@@ -128,7 +133,7 @@ public class Free : GameState {
 
             game.FreeUI.Confirm.visible = false;
             game.FreeUI.Cancel.visible = false;
-            game.FreeUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ", "(クリック) - ボール移動" });
+            game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ", "(クリック) - ボール移動" });
         }
     }
 
@@ -140,7 +145,7 @@ public class Free : GameState {
         rigidbody.velocity = Vector3.zero;
         rigidbody.Sleep();
 
-        if (game.SolidsPlayer == GameController.Players.NONE)
+        if (game.SolidsPlayer == Players.NONE)
             game.State = new Shot(game);
         else
             game.State = new Call(game);

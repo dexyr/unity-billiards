@@ -15,6 +15,9 @@ public class Call : GameState {
     bool isBallSet, isPocketSet;
     CallInfo call;
 
+    CameraStates cameraState;
+    int index;
+
     public Call(GameController game) : base(game) {
         callGhost = GameObject.Instantiate(game.CallGhostPrefab);
         callGhost.SetActive(false);
@@ -24,6 +27,10 @@ public class Call : GameState {
 
         validGroup = game.CurrentGroup;
         isBallSet = false;
+
+        cameraState = CameraStates.OVERHEAD;
+        index = 0;
+        game.HintUI.SetHint(new string[] { "(C) - 手球カメラ" });
     }
 
     public override void Enter() {
@@ -34,6 +41,8 @@ public class Call : GameState {
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
 
+        game.HintUI.Visible = true;
+
         game.CallUI.Reset.clicked += Reset;
         game.CallUI.Call.clicked += CallShot;
         game.CallUI.Safety.clicked += Safety;
@@ -43,9 +52,13 @@ public class Call : GameState {
         GameObject.Destroy(callGhost);
         GameObject.Destroy(pocketGhost);
 
+        game.TargetCamera.gameObject.SetActive(false);
+
         game.CallUI.Visible = false;
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
+
+        game.HintUI.Visible = false;
 
         game.CallUI.Reset.clicked -= Reset;
         game.CallUI.Call.clicked -= CallShot;
@@ -55,6 +68,7 @@ public class Call : GameState {
     public override void Update() {
         if (Input.GetMouseButtonDown(0))
             Select();
+
         if (!isBallSet) {
             if (MoveBall())
                 callGhost.SetActive(true);
@@ -67,6 +81,75 @@ public class Call : GameState {
             else
                 pocketGhost.SetActive(false);
         }
+
+        if (Input.GetKeyDown(KeyCode.C))
+            ChangeCamera();
+
+        if (cameraState == CameraStates.BALL) {
+            if (Input.GetMouseButtonDown(0))
+                ChangeBall(1);
+
+            if (Input.GetMouseButtonDown(1))
+                ChangeBall(-1);
+        }
+    }
+
+    void ChangeCamera() {
+        switch (cameraState) {
+        case CameraStates.OVERHEAD:
+            cameraState = CameraStates.CUE;
+            game.HintUI.SetHint(new string[] { "(C) - ボールカメラ" });
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            game.CallUI.Call.visible = false;
+            game.CallUI.Reset.visible = false;
+            game.CallUI.Safety.visible = false;
+
+            game.TargetCamera.Target = game.CueBall.gameObject;
+            game.TargetCamera.gameObject.SetActive(true);
+            break;
+
+        case CameraStates.CUE:
+            cameraState = CameraStates.BALL;
+            game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ", "(クリック) - ボール移動" });
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            game.TargetCamera.Target = game.Balls[0].gameObject;
+            break;
+
+        case CameraStates.BALL:
+            cameraState = CameraStates.OVERHEAD;
+            game.HintUI.SetHint(new string[] { "(C) - 手球カメラ" });
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            game.CallUI.Safety.visible = false;
+
+            if (isBallSet)
+                game.CallUI.Reset.visible = true;
+
+            if (isPocketSet)
+                game.CallUI.Call.visible = true;
+
+            game.TargetCamera.gameObject.SetActive(false);
+            break;
+        }
+    }
+
+    void ChangeBall(int value) {
+        index += value;
+
+        if (index < 0)
+            index = game.Balls.Count - 1;
+        if (index >= game.Balls.Count)
+            index = 0;
+
+        game.TargetCamera.Target = game.Balls[index].gameObject;
     }
 
     void Select() {
@@ -131,7 +214,7 @@ public class Call : GameState {
         Pocket pocket = null;
 
         if (Physics.Raycast(ray, out RaycastHit hit, 10, game.TableLayer)) {
-            Collider[] colliders = Physics.OverlapSphere(hit.point, 0.05f, ~(game.TableLayer));
+            Collider[] colliders = Physics.OverlapSphere(hit.point, 0.1f, game.PocketLayer);
 
             if (colliders.Length > 0)
                 pocket = colliders[0].GetComponent<Pocket>();

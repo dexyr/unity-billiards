@@ -39,11 +39,11 @@ public class BreakShotResult : GameState {
         if (Is8Scratch()) {
             game.ShotResultUI.Results.Add($"エイトボールスクラッチしました。");
 
-            GameController.Players winner;
-            if (game.CurrentPlayer == GameController.Players.PLAYER1)
-                winner = GameController.Players.PLAYER2;
+            Players winner;
+            if (game.CurrentPlayer == Players.PLAYER1)
+                winner = Players.PLAYER2;
             else
-                winner = GameController.Players.PLAYER1;
+                winner = Players.PLAYER1;
 
             next = new End(game, winner);
             return;
@@ -67,6 +67,15 @@ public class BreakShotResult : GameState {
 
             game.ChangeTurn();
             next = new Break(game);
+            return;
+        }
+
+        if (pocketedNow.Count == 0) {
+            game.ShotResultUI.Results.Add("ブレイク成功でした。");
+            game.ShotResultUI.Results.Add("ターンが交代します。");
+
+            game.ChangeTurn();
+            next = new Shot(game);
             return;
         }
 
