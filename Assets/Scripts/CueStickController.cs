@@ -106,7 +106,7 @@ public class CueStickController : MonoBehaviour {
 
     public void CueStickHit(Collision collision, CueBall cueBall) {
         ContactPoint contact = collision.GetContact(0);
-        cueBall.GetComponent<Rigidbody>().AddForceAtPosition(transform.forward * collision.relativeVelocity.magnitude / 300, contact.point, ForceMode.Impulse);
+        cueBall.GetComponent<Rigidbody>().AddForceAtPosition(transform.forward * collision.relativeVelocity.magnitude / 200, contact.point, ForceMode.Impulse);
     }
 
     void Shot() {

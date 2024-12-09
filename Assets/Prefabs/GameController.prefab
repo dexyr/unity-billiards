@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9030824709569115345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 391332045554955360}
+  - component: {fileID: 7948775200947163274}
+  - component: {fileID: 4371252168879790577}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: GameController
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &391332045554955360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9030824709569115345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.571123, y: -24.920193, z: 36.802742}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7948775200947163274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9030824709569115345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e22f04b5fb14d054ea555c5c65d23b86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  simulationSpeed: 1
+  MenuUI: {fileID: 0}
+  TurnUI: {fileID: 0}
+  HintUI: {fileID: 0}
+  BreakUI: {fileID: 0}
+  CallUI: {fileID: 0}
+  ShotResultUI: {fileID: 0}
+  GroupUI: {fileID: 0}
+  EndUI: {fileID: 0}
+  FreeUI: {fileID: 0}
+  TargetCamera: {fileID: 0}
+  StickController: {fileID: 0}
+  Stick: {fileID: 0}
+  CueBall: {fileID: 0}
+  Overhead: {fileID: 0}
+  ShotCamera: {fileID: 0}
+  Balls: []
+  Pockets: []
+  Cushions: []
+  ballSetPrefab: {fileID: 6448073057979859413, guid: 601a89318482e6742a82ce21e6a381a4, type: 3}
+  cueBallPrefab: {fileID: 5402343187612885493, guid: bb343d4dcd1bb8444b30730aa52475e9, type: 3}
+  CueBallGhostPrefab: {fileID: 1445436258106165392, guid: edec93df82d96d44d8f899ac6e986099, type: 3}
+  CallGhostPrefab: {fileID: 5670085109066757330, guid: 14e47de3f44879b43b9eb38039a18d59, type: 3}
+  PocketGhostPrefab: {fileID: 6528492763408492515, guid: f8c850d4f294f954281ad597db8a60be, type: 3}
+  TableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  CueBallGhostLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  PocketLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  Solids: []
+  Stripes: []
+  Player1Balls: []
+  Player2Balls: []
+  CurrentPlayer: 0
+  IsBreak: 0
+  SolidsPlayer: 0
+--- !u!114 &4371252168879790577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9030824709569115345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3146ec7c889bdd41a599a350a3f4a19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

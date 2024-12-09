@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum Players { NONE, PLAYER1, PLAYER2 } // Listのほうがフレキシブルだが
 public enum CameraStates { OVERHEAD, CUE, BALL }
@@ -14,8 +15,6 @@ public class GameController : MonoBehaviour {
     public delegate void TurnChangeHandler(Players turn);
     public event TurnChangeHandler TurnChanged;
 
-    [SerializeField] float simulationSpeed;
-
     [SerializeField] public MenuUI MenuUI;
     [SerializeField] public TurnUI TurnUI;
     [SerializeField] public HintUI HintUI;
@@ -26,7 +25,7 @@ public class GameController : MonoBehaviour {
     [SerializeField] public EndUI EndUI;
     [SerializeField] public FreeUI FreeUI;
 
-    [SerializeField] public TargetCamera TargetCamera;
+    public TargetCamera TargetCamera;
 
     public CueStickController StickController;
     public CueStick Stick;
@@ -54,13 +53,16 @@ public class GameController : MonoBehaviour {
     public GameState State {
         get => state;
         set {
-            state.Exit();
+            if (state != null)
+                state.Exit();
+
             value.Enter();
             state = value;
             StateChanged?.Invoke(State);
         }
     }
 
+    public Players Winner = Players.NONE;
     public Players CurrentPlayer = Players.NONE;
     public Players OtherPlayer {
         get => CurrentPlayer == Players.PLAYER1 ? Players.PLAYER2 : Players.PLAYER1;
@@ -91,9 +93,75 @@ public class GameController : MonoBehaviour {
     }
 
     public void Start() {
+        ShotResultUI.Visible = false;
+        CallUI.Visible = false;
+        HintUI.Visible = false;
+        BreakUI.Visible = false;
+        TurnUI.Visible = false;
+        TurnUI.Call.visible = false;
+        GroupUI.Visible = false;
+        FreeUI.Visible = false;
+        EndUI.Visible = false;
+    }
+
+    public void Update() {
+        if (state != null)
+            state.Update();
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            ClearTable();
+            SetTable();
+            CurrentPlayer = Players.PLAYER1;
+            IsBreak = true;
+
+            State = new Menu(this);
+        }
+    }
+
+    public void StartGame() {
+        SceneManager.LoadScene("Game");
+    }
+
+    public void StartMenu() {
+        SceneManager.LoadScene("Menu");
+    }
+
+    public void EndGame(Players winner) {
+        SceneManager.LoadScene("End");
+        Winner = winner;
+    }
+
+    // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] これ使えない
+    public void AfterSceneLoad() {
+        switch(SceneManager.GetActiveScene().name) {
+        case "Game":
+            OnGameLoad();
+            break;
+
+        case "Menu":
+            OnMenuLoad();
+            break;
+
+        case "End":
+            OnEndLoad();
+            break;
+        }
+    }
+
+    public void OnMenuLoad() {
+        State = new Menu(this);
+    }
+
+    public void OnEndLoad() {
+        State = new End(this);
+    }
+
+    public void OnGameLoad() {
+        Pockets.Clear();
         foreach (Pocket p in FindObjectsByType<Pocket>(FindObjectsSortMode.None))
             Pockets.Add(p);
 
+        Cushions.Clear();
         foreach (Cushion c in FindObjectsByType<Cushion>(FindObjectsSortMode.None))
             Cushions.Add(c);
 
@@ -107,35 +175,16 @@ public class GameController : MonoBehaviour {
         ShotCamera = GameObject.FindGameObjectWithTag("Shot Camera").GetComponent<Camera>();
         ShotCamera.gameObject.SetActive(false);
 
-        ShotResultUI.Visible = false;
-        CallUI.Visible = false;
-        HintUI.Visible = false;
-        BreakUI.Visible = false;
-        TurnUI.Visible = false;
-        TurnUI.Call.visible = false;
-        GroupUI.Visible = false;
-        FreeUI.Visible = false;
-        EndUI.Visible = false;
-
+        TargetCamera = FindObjectOfType<TargetCamera>();
         TargetCamera.gameObject.SetActive(false);
 
-        state = new Menu(this);
-        state.Enter();
+        ClearTable();
+        SetTable();
+        CurrentPlayer = Players.PLAYER1;
+        Winner = Players.NONE;
+        IsBreak = true;
 
-        Time.timeScale = simulationSpeed;
-    }
-
-    public void Update() {
-        state.Update();
-
-        if (Input.GetKeyDown(KeyCode.R)) {
-            ClearTable();
-            SetTable();
-            CurrentPlayer = Players.PLAYER1;
-            IsBreak = true;
-
-            State = new Menu(this);
-        }
+        State = new Shot(this);
     }
 
     public void SetTable() {

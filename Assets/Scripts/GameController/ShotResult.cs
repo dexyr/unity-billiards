@@ -47,7 +47,7 @@ public class ShotResult : GameState {
             else
                 winner = Players.PLAYER1;
 
-            next = new End(game, winner);
+            game.EndGame(winner);
             return;
         }
 

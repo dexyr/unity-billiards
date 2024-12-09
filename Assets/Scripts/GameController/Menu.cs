@@ -19,11 +19,6 @@ public class Menu : GameState {
     public override void Update() { }
 
     public void StartGame() {
-        game.ClearTable();
-        game.SetTable();
-        game.CurrentPlayer = Players.PLAYER1;
-        game.IsBreak = true;
-
-        game.State = new Shot(game);
+        game.StartGame();
     }
 }
