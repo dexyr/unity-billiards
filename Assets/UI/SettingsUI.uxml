@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=155558cbcd1b7024eb7b552ee6910878&amp;type=3#Menu" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:VisualElement style="flex-grow: initial; height: 80%;">
+            <ui:Label tabindex="-1" text="マウス設定" parse-escape-sequences="true" display-tooltip-when-elided="true" class="heading" />
+            <ui:VisualElement name="VisualElement" style="justify-content: center; flex-grow: 1;">
+                <ui:Slider label="プレイヤー1" high-value="2" low-value="0.5" name="player1" focusable="false" class="subheading slider" />
+                <ui:Slider label="プレイヤー2" high-value="2" name="player2" focusable="false" low-value="0.5" class="subheading slider" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row; align-items: center; justify-content: center;">
+            <ui:Button text="確定" parse-escape-sequences="true" display-tooltip-when-elided="true" name="save" />
+            <ui:Button text="リセット" parse-escape-sequences="true" display-tooltip-when-elided="true" name="reset" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

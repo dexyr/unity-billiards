@@ -14,12 +14,18 @@ public class Shot : GameState {
         Cursor.visible = false;
 
         game.StickController.gameObject.SetActive(true);
+        game.StickController.Sensitivity = game.CurrentPlayerSensitivity;
+        Debug.Log($"setting {game.CurrentPlayer} sens to {game.CurrentPlayerSensitivity}");
+        Debug.Log($"{game.Player1Sensitivity}, {game.Player2Sensitivity}");
+
         game.ShotCamera.gameObject.SetActive(true);
 
         game.HintUI.Visible = true;
         game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ" });
 
+        game.TurnUI.Visible = true;
         game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
+        game.TurnUI.OptionHint.visible = true;
         
         if (game.SolidsPlayer != Players.NONE) {
             game.TurnUI.SetCall(call);
@@ -27,6 +33,7 @@ public class Shot : GameState {
         }
 
         game.Stick.StickCollided += StickCollided;
+        game.Unpaused += Unpaused;
     }
 
     public override void Exit() {
@@ -37,6 +44,7 @@ public class Shot : GameState {
         game.TurnUI.Call.visible = false;
 
         game.Stick.StickCollided -= StickCollided;
+        game.Unpaused -= Unpaused;
     }
 
     public override void Update() {
@@ -51,6 +59,14 @@ public class Shot : GameState {
             else
                 game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ" });
         }
+
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
+
+    void Unpaused() {
+        game.StickController.Sensitivity = game.CurrentPlayerSensitivity;
+        Debug.Log($"setting {game.CurrentPlayer} sens to {game.CurrentPlayerSensitivity}");
     }
 
     void StickCollided(Collision collision, CueBall cueBall) {

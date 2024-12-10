@@ -29,6 +29,9 @@ public class Group : GameState {
         game.GroupUI.Refresh(solids, stripes);
         game.GroupUI.Visible = true;
 
+        game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
+
         game.GroupUI.GroupChosen += ChooseGroup;
     }
 
@@ -38,7 +41,10 @@ public class Group : GameState {
         game.GroupUI.GroupChosen -= ChooseGroup;
     }
 
-    public override void Update() {}
+    public override void Update() {
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
 
     public void ChooseGroup(Ball.Group group) {
         Players otherPlayer = game.OtherPlayer;

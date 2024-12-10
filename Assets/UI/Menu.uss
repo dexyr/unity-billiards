@@ -11,7 +11,7 @@
 }
 
 Button {
-    -unity-font: url("project://database/Assets/UI/Fonts/NotoSansJP-Medium.ttf?fileID=12800000&guid=d156ba8163cdb8a4b852efec3c575bbf&type=3#NotoSansJP-Medium");
+    -unity-font: url("project://database/Assets/UI/Fonts/NotoSansJP-Regular.ttf?fileID=12800000&guid=f92c445d87262244c8539359075142f8&type=3#NotoSansJP-Regular");
     border-top-left-radius: 32px;
     border-top-right-radius: 32px;
     border-bottom-right-radius: 32px;
@@ -40,9 +40,9 @@ Button {
     -unity-text-align: upper-center;
     color: rgb(255, 255, 255);
     -unity-font-style: normal;
-    -unity-font-definition: initial;
     -unity-font: url("project://database/Assets/UI/Fonts/NotoSansJP-Medium.ttf?fileID=12800000&guid=d156ba8163cdb8a4b852efec3c575bbf&type=3#NotoSansJP-Medium");
     text-shadow: 2px 2px 4px rgb(0, 0, 0);
+    -unity-font-definition: initial;
 }
 
 .text {
@@ -51,4 +51,9 @@ Button {
     -unity-text-align: upper-center;
     color: rgb(255, 255, 255);
     font-size: 32px;
+}
+
+.slider {
+    padding-right: 5%;
+    padding-left: 5%;
 }

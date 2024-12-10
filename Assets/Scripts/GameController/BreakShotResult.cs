@@ -18,6 +18,9 @@ public class BreakShotResult : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
+
         game.ShotResultUI.Refresh();
         game.ShotResultUI.Visible = true;
 
@@ -85,7 +88,10 @@ public class BreakShotResult : GameState {
         next = new Group(game, pocketedNow);
     }
 
-    public override void Update() {}
+    public override void Update() {
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
 
     public void Confirm() {
         game.State = next;

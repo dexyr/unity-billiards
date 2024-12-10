@@ -8,15 +8,19 @@ public class Menu : GameState {
         Cursor.visible = true;
 
         game.MenuUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
+
         game.MenuUI.Start.clicked += StartGame;
     }
     public override void Exit() {
         game.MenuUI.Visible = false;
-        game.MenuUI.Start.clicked -= StartGame;
 
-        game.TurnUI.Visible = true;
+        game.MenuUI.Start.clicked -= StartGame;
     }
-    public override void Update() { }
+    public override void Update() {
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
 
     public void StartGame() {
         game.StartGame();

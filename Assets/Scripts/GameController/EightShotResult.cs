@@ -8,7 +8,10 @@ public class EightShotResult : GameState {
         this.pocketedNow = pocketedNow;
     }
 
-    public override void Enter() {}
+    public override void Enter() {
+        game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
+    }
 
     public override void Exit() {}
 
@@ -25,6 +28,9 @@ public class EightShotResult : GameState {
 
         game.ChangeTurn();
         game.State = new Call(game);
+
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
     }
 
     bool IsCueScratch() {

@@ -15,7 +15,11 @@ public class GameController : MonoBehaviour {
     public delegate void TurnChangeHandler(Players turn);
     public event TurnChangeHandler TurnChanged;
 
+    public delegate void PauseHandler();
+    public event PauseHandler Unpaused;
+
     [SerializeField] public MenuUI MenuUI;
+    [SerializeField] public SettingsUI SettingsUI;
     [SerializeField] public TurnUI TurnUI;
     [SerializeField] public HintUI HintUI;
     [SerializeField] public BreakUI BreakUI;
@@ -49,6 +53,16 @@ public class GameController : MonoBehaviour {
     public List<Ball> Player1Balls = new List<Ball>();
     public List<Ball> Player2Balls = new List<Ball>();
 
+    public float Player1Sensitivity;
+    public float Player2Sensitivity;
+
+    public float CurrentPlayerSensitivity {
+        get => CurrentPlayer == Players.PLAYER1 ? Player1Sensitivity
+            : CurrentPlayer == Players.PLAYER2 ? Player2Sensitivity
+            : 1;
+    }
+
+    private GameState previous;
     private GameState state;
     public GameState State {
         get => state;
@@ -79,6 +93,23 @@ public class GameController : MonoBehaviour {
             : Ball.Group.SOLID;
     }
 
+    bool isPaused;
+    public bool IsPaused {
+        get => isPaused;
+        set {
+            isPaused = value;
+
+            if (isPaused) {
+                previous = state;
+                State = new Settings(this); 
+            }
+            else {
+                State = previous;
+                Unpaused?.Invoke();
+            }
+        }
+    }
+
     public bool IsBreak;
 
     public Players SolidsPlayer = Players.NONE;
@@ -93,7 +124,11 @@ public class GameController : MonoBehaviour {
     }
 
     public void Start() {
+        Player1Sensitivity = 1;
+        Player2Sensitivity = 1;
+
         ShotResultUI.Visible = false;
+        SettingsUI.Visible = false;
         CallUI.Visible = false;
         HintUI.Visible = false;
         BreakUI.Visible = false;
@@ -105,7 +140,7 @@ public class GameController : MonoBehaviour {
     }
 
     public void Update() {
-        if (state != null)
+        if (state != null && !IsPaused)
             state.Update();
 
         if (Input.GetKeyDown(KeyCode.R)) {
@@ -150,10 +185,12 @@ public class GameController : MonoBehaviour {
 
     public void OnMenuLoad() {
         State = new Menu(this);
+        CurrentPlayer = Players.NONE;
     }
 
     public void OnEndLoad() {
         State = new End(this);
+        CurrentPlayer = Players.NONE;
     }
 
     public void OnGameLoad() {

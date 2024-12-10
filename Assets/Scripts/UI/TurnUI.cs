@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public class TurnUI : MonoBehaviour {
     UIDocument uiDocument;
+    public Label OptionHint;
     Label player, group;
     public Label Call;
 
@@ -16,6 +17,7 @@ public class TurnUI : MonoBehaviour {
     public void Awake() {
         uiDocument = GetComponent<UIDocument>();
 
+        OptionHint = (Label) uiDocument.rootVisualElement.Query("option-hint");
         player = (Label) uiDocument.rootVisualElement.Query("player");
         group = (Label) uiDocument.rootVisualElement.Query("group");
         Call = (Label) uiDocument.rootVisualElement.Query("call");

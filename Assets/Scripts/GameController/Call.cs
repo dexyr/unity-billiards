@@ -41,7 +41,10 @@ public class Call : GameState {
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
 
+        game.TurnUI.Visible = true;
         game.HintUI.Visible = true;
+
+        game.TurnUI.OptionHint.visible = true;
 
         game.CallUI.Reset.clicked += Reset;
         game.CallUI.Call.clicked += CallShot;
@@ -92,6 +95,9 @@ public class Call : GameState {
             if (Input.GetMouseButtonDown(1))
                 ChangeBall(-1);
         }
+
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
     }
 
     void ChangeCamera() {

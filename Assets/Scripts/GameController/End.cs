@@ -9,6 +9,7 @@ public class End : GameState {
         Cursor.visible = true;
 
         game.TurnUI.Visible = false;
+        game.TurnUI.OptionHint.visible = true;
 
         game.EndUI.Visible = true;
         game.EndUI.Refresh(game.Winner, game.Player1Balls, game.Player2Balls);
@@ -24,7 +25,10 @@ public class End : GameState {
         game.EndUI.Menu.clicked -= Return;
     }
 
-    public override void Update() {}
+    public override void Update() {
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
 
     public void Replay() {
         game.StartGame();

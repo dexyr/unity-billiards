@@ -26,6 +26,9 @@ public class Simulation : GameState {
         foreach (var m in GameObject.FindObjectsOfType<Moving>())
             m.MotionUpdated += BallMotion;
 
+        game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = false;
+
         game.CueBall.BallCollided += CueBallCollided;
     }
 

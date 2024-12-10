@@ -32,6 +32,8 @@ public class Free : GameState {
         game.CueBall.gameObject.SetActive(false);
 
         game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
+        game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
 
         game.FreeUI.Visible = true;
         game.FreeUI.Confirm.visible = false;
@@ -74,6 +76,9 @@ public class Free : GameState {
 
         if (Input.GetKeyDown(KeyCode.C))
             ChangeCamera();
+
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
 
         // RigidbodyÇégÇÌÇ∏ÅATriggerÇ‡égÇÌÇ∏
         Collider[] colliders = Physics.OverlapSphere(cueBallGhost.transform.position, radius, ~(game.TableLayer | game.CueBallGhostLayer));

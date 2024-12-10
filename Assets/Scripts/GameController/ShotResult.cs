@@ -22,6 +22,8 @@ public class ShotResult : GameState {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        game.TurnUI.Visible = true;
+
         game.ShotResultUI.Refresh();
         game.ShotResultUI.Visible = true;
 
@@ -136,7 +138,10 @@ public class ShotResult : GameState {
         next = new Shot(game);
     }
 
-    public override void Update() {}
+    public override void Update() {
+        if (Input.GetKeyDown(KeyCode.O))
+            game.IsPaused = true;
+    }
 
     public void Confirm() {
         game.State = next;

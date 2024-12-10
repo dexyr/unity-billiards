@@ -4,7 +4,7 @@ public class CueStickController : MonoBehaviour {
     public GameObject Target;
 
     [SerializeField] new GameObject camera;
-    [SerializeField] float sensitivity = 2;
+    public float Sensitivity;
 
     CueStick cueStick;
 
@@ -112,13 +112,13 @@ public class CueStickController : MonoBehaviour {
     void Shot() {
         var rigidbody = cueStick.GetComponent<Rigidbody>();
 
-        float z = Input.GetAxis("Mouse Y") * sensitivity * rigidbody.mass;
+        float z = Input.GetAxis("Mouse Y") * Sensitivity * 2 * rigidbody.mass;
         stickSlide = z;
     }
 
     void Aim() {
-        float x = Input.GetAxis("Mouse X") * sensitivity / 1000;
-        float y = Input.GetAxis("Mouse Y") * sensitivity / 1000;
+        float x = Input.GetAxis("Mouse X") * Sensitivity / 1000;
+        float y = Input.GetAxis("Mouse Y") * Sensitivity / 1000;
 
         stickOffset.x += x;
         stickOffset.y += y;
@@ -128,8 +128,8 @@ public class CueStickController : MonoBehaviour {
     }
 
     void Look() {
-        float yaw = Input.GetAxis("Mouse X") * sensitivity;
-        float pitch = -Input.GetAxis("Mouse Y") * sensitivity;
+        float yaw = Input.GetAxis("Mouse X") * Sensitivity;
+        float pitch = -Input.GetAxis("Mouse Y") * Sensitivity;
 
         Vector3 newRotation = transform.localEulerAngles + new Vector3(pitch, yaw, 0);
         newRotation.x = Mathf.Clamp(newRotation.x, angleMin, angleMax);
