@@ -6,9 +6,6 @@ public class Group : GameState {
 
     public Group(GameController game, List<Ball> pocketedNow) : base(game) {
         this.pocketedNow = pocketedNow;
-
-        foreach (Ball b in pocketedNow)
-            Debug.Log(b);
     }
 
     public override void Enter() {
@@ -43,7 +40,7 @@ public class Group : GameState {
 
     public override void Update() {
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     public void ChooseGroup(Ball.Group group) {

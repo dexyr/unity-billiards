@@ -11,6 +11,7 @@ TagManager:
   - Rack Spawn
   - Cue Spawn
   - Ball Spawn
+  - Table Area
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Table
   - Cue Ball Ghost
   - Pocket
-  - 
+  - Triggers
   - 
   - 
   - 

@@ -15,7 +15,7 @@ public class CueStickController : MonoBehaviour {
     Vector3 aimOffset = new Vector3(-0.02f, 0.02f, -(aimDistanceMax + aimDistanceMin) / 2);
 
     static int angleMin = 10;
-    static int angleMax = 45;
+    static int angleMax = 60;
 
     static float aimDistanceMin = 0.1f;
     static float aimDistanceMax = 0.4f;

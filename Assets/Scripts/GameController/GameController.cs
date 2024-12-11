@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour {
     public event PauseHandler Unpaused;
 
     [SerializeField] public MenuUI MenuUI;
+    [SerializeField] public PauseUI PauseUI;
     [SerializeField] public SettingsUI SettingsUI;
     [SerializeField] public TurnUI TurnUI;
     [SerializeField] public HintUI HintUI;
@@ -44,8 +45,10 @@ public class GameController : MonoBehaviour {
 
     [SerializeField] GameObject ballSetPrefab, cueBallPrefab;
 
+    public GameObject TableArea;
+
     [SerializeField] public GameObject CueBallGhostPrefab, CallGhostPrefab, PocketGhostPrefab;
-    [SerializeField] public LayerMask TableLayer, CueBallGhostLayer, PocketLayer;
+    [SerializeField] public LayerMask TableLayer, CueBallGhostLayer, PocketLayer, TriggerLayer;
 
     public List<Ball> Pocketed { get; private set; } = new List<Ball>();
     public List<Ball> Solids = new List<Ball>();
@@ -93,23 +96,6 @@ public class GameController : MonoBehaviour {
             : Ball.Group.SOLID;
     }
 
-    bool isPaused;
-    public bool IsPaused {
-        get => isPaused;
-        set {
-            isPaused = value;
-
-            if (isPaused) {
-                previous = state;
-                State = new Settings(this); 
-            }
-            else {
-                State = previous;
-                Unpaused?.Invoke();
-            }
-        }
-    }
-
     public bool IsBreak;
 
     public Players SolidsPlayer = Players.NONE;
@@ -128,6 +114,7 @@ public class GameController : MonoBehaviour {
         Player2Sensitivity = 1;
 
         ShotResultUI.Visible = false;
+        PauseUI.Visible = false;
         SettingsUI.Visible = false;
         CallUI.Visible = false;
         HintUI.Visible = false;
@@ -140,17 +127,23 @@ public class GameController : MonoBehaviour {
     }
 
     public void Update() {
-        if (state != null && !IsPaused)
+        if (state != null && !(state is Settings) && !(state is Pause))
             state.Update();
 
-        if (Input.GetKeyDown(KeyCode.R)) {
-            ClearTable();
-            SetTable();
-            CurrentPlayer = Players.PLAYER1;
-            IsBreak = true;
+        bool canPause = !(state is Pause || state is Simulation || state is Menu || state is End);
 
-            State = new Menu(this);
-        }
+        if (Input.GetKeyDown(KeyCode.Escape) && canPause)
+            Pause(new Pause(this));
+    }
+
+    public void Pause(GameState pauseState) {
+        previous = state;
+        State = pauseState;
+    }
+
+    public void Unpause() {
+        State = previous;
+        Unpaused?.Invoke();
     }
 
     public void StartGame() {
@@ -159,11 +152,11 @@ public class GameController : MonoBehaviour {
 
     public void StartMenu() {
         SceneManager.LoadScene("Menu");
+        Destroy(this.gameObject);
     }
 
-    public void EndGame(Players winner) {
+    public void EndGame() {
         SceneManager.LoadScene("End");
-        Winner = winner;
     }
 
     // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] ‚±‚êŽg‚¦‚È‚¢
@@ -189,7 +182,6 @@ public class GameController : MonoBehaviour {
     }
 
     public void OnEndLoad() {
-        State = new End(this);
         CurrentPlayer = Players.NONE;
     }
 
@@ -206,6 +198,8 @@ public class GameController : MonoBehaviour {
         Stick = FindObjectOfType<CueStick>();
 
         StickController.gameObject.SetActive(false); // parent
+
+        TableArea = GameObject.FindGameObjectWithTag("Table Area");
 
         Overhead = GameObject.FindGameObjectWithTag("Overhead Camera").GetComponent<Camera>();
 

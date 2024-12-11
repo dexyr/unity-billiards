@@ -27,7 +27,7 @@ public class End : GameState {
 
     public override void Update() {
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     public void Replay() {

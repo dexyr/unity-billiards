@@ -8,9 +8,12 @@ public class Simulation : GameState {
     List<Ball> cushionBalls = new List<Ball>();
     Ball firstTouched;
     CallInfo? call;
+    bool ballOut = false;
+    bool wasEightShot;
 
     public Simulation(GameController game, CallInfo? call=null) : base(game) {
         this.call = call;
+        wasEightShot = game.IsEightShot;
     }
 
     public override void Enter() {
@@ -25,6 +28,9 @@ public class Simulation : GameState {
 
         foreach (var m in GameObject.FindObjectsOfType<Moving>())
             m.MotionUpdated += BallMotion;
+
+        foreach (var b in GameObject.FindObjectsOfType<Ball>())
+            b.BallOut += BallOut;
 
         game.TurnUI.Visible = true;
         game.TurnUI.OptionHint.visible = false;
@@ -42,6 +48,9 @@ public class Simulation : GameState {
         foreach (var m in GameObject.FindObjectsOfType<Moving>())
             m.MotionUpdated -= BallMotion;
 
+        foreach (var b in GameObject.FindObjectsOfType<Ball>())
+            b.BallOut -= BallOut;
+
         game.CueBall.BallCollided -= CueBallCollided;
     }
 
@@ -55,11 +64,11 @@ public class Simulation : GameState {
             return;
 
         if (game.IsBreak)
-            game.State = new BreakShotResult(game, pocketedNow, cushionBalls);
-        else if (game.IsEightShot)
-            game.State = new EightShotResult(game, pocketedNow, call);
+            game.State = new BreakShotResult(game, pocketedNow, cushionBalls, ballOut);
+        else if (wasEightShot)
+            game.State = new EightShotResult(game, pocketedNow, cushionBalls, firstTouched, ballOut, call);
         else
-            game.State = new ShotResult(game, pocketedNow, cushionBalls, firstTouched, call);
+            game.State = new ShotResult(game, pocketedNow, cushionBalls, firstTouched, ballOut, call);
     }
 
     void BallMotion(Moving movingObject, bool isMoving) {
@@ -73,6 +82,15 @@ public class Simulation : GameState {
             Moving.Remove(movingObject);
     }
 
+    void BallOut(Ball ball, Collider collider) {
+        if (collider.gameObject != game.TableArea)
+            return;
+
+        ballOut = true;
+        pocketedNow.Add(ball);
+        PocketBall(ball);
+    }
+
     void CushionHit(Ball ball) {
         if (ball.number == -1 || cushionBalls.Contains(ball))
             return;
@@ -84,10 +102,11 @@ public class Simulation : GameState {
         if (!ball.gameObject.activeSelf)
             return;
 
-        Ball.Group group = Ball.GetGroup(ball.number);
-
         pocketedNow.Add(ball);
+        PocketBall(ball);
+    }
 
+    void PocketBall(Ball ball) {
         ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
         ball.gameObject.SetActive(false);
         Moving.Remove(ball.GetComponent<Moving>());

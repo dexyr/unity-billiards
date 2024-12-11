@@ -78,10 +78,10 @@ public class Free : GameState {
             ChangeCamera();
 
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
 
         // RigidbodyÇégÇÌÇ∏ÅATriggerÇ‡égÇÌÇ∏
-        Collider[] colliders = Physics.OverlapSphere(cueBallGhost.transform.position, radius, ~(game.TableLayer | game.CueBallGhostLayer));
+        Collider[] colliders = Physics.OverlapSphere(cueBallGhost.transform.position, radius, ~(game.TableLayer | game.CueBallGhostLayer | game.TriggerLayer));
 
         var material = cueBallGhost.GetComponent<Renderer>().material;
 

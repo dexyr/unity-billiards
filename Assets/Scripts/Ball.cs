@@ -1,6 +1,9 @@
 using UnityEngine;
 
 public class Ball : MonoBehaviour {
+    public delegate void BallOutHandler(Ball ball, Collider collider);
+    public event BallOutHandler BallOut;
+
     public enum Group { NONE, SOLID, STRIPE, EIGHT, CUE };
     static public Group GetGroup(int number) {
         if (number > 0 && number < 8)
@@ -37,10 +40,15 @@ public class Ball : MonoBehaviour {
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.maxAngularVelocity = float.MaxValue;
     }
+
     void FixedUpdate() {
         Bounce = minBounce + rigidbody.velocity.magnitude * Time.fixedDeltaTime * 5;
         Bounce = Mathf.Clamp(Bounce, minBounce, 1);
 
         physicMaterial.bounciness = Bounce;
+    }
+
+    void OnTriggerExit(Collider collider) {
+        BallOut?.Invoke(this, collider);
     }
 }

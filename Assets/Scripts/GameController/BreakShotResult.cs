@@ -4,12 +4,15 @@ using UnityEngine;
 public class BreakShotResult : GameState {
     List<Ball> pocketedNow;
     List<Ball> cushionBalls;
+    bool ballOut;
+    bool changeTurn = false;
 
     GameState next;
 
-    public BreakShotResult(GameController game, List<Ball> pocketedNow, List<Ball> cushionBalls) : base(game) {
+    public BreakShotResult(GameController game, List<Ball> pocketedNow, List<Ball> cushionBalls, bool ballOut) : base(game) {
         this.pocketedNow = pocketedNow;
         this.cushionBalls = cushionBalls;
+        this.ballOut = ballOut;
     }
 
     public override void Enter() {
@@ -20,6 +23,7 @@ public class BreakShotResult : GameState {
 
         game.TurnUI.Visible = true;
         game.TurnUI.OptionHint.visible = true;
+        game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
 
         game.ShotResultUI.Refresh();
         game.ShotResultUI.Visible = true;
@@ -37,7 +41,11 @@ public class BreakShotResult : GameState {
     }
 
     void CalculateResults() {
-        game.ShotResultUI.Results.Add($"ボールが{pocketedNow.Count}個ポケットしました。");
+        int pocketed = pocketedNow.Count;
+        if (pocketedNow.Contains(game.CueBall.GetComponent<Ball>()) && pocketed > 0)
+            pocketed--;
+
+        game.ShotResultUI.Results.Add($"ボールが{pocketed}個ポケットしました。");
 
         if (Is8Scratch()) {
             game.ShotResultUI.Results.Add($"エイトボールスクラッチしました。");
@@ -48,16 +56,27 @@ public class BreakShotResult : GameState {
             else
                 winner = Players.PLAYER1;
 
-            game.EndGame(winner);
+            game.Winner = winner;
+            next = new End(game);
+            return;
+        }
+
+        if (ballOut) {
+            game.ShotResultUI.Results.Add("場外スクラッチしました。");
+            game.ShotResultUI.Results.Add("ブレイク失敗しました。");
+            game.ShotResultUI.Results.Add("ターンが交代します。");
+
+            changeTurn = true;
+            next = new Break(game);
             return;
         }
 
         if (IsCueScratch()) {
-            game.ShotResultUI.Results.Add("キュースクラッチしました。");
+            game.ShotResultUI.Results.Add("手球スクラッチしました。");
             game.ShotResultUI.Results.Add("ブレイク失敗しました。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Break(game);
             return;
         }
@@ -68,7 +87,7 @@ public class BreakShotResult : GameState {
             game.ShotResultUI.Results.Add("ブレイク失敗しました。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Break(game);
             return;
         }
@@ -77,7 +96,7 @@ public class BreakShotResult : GameState {
             game.ShotResultUI.Results.Add("ブレイク成功でした。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Shot(game);
             return;
         }
@@ -90,11 +109,17 @@ public class BreakShotResult : GameState {
 
     public override void Update() {
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     public void Confirm() {
         game.State = next;
+
+        if (changeTurn)
+            game.ChangeTurn();
+
+        if (next is End)
+            game.EndGame();
     }
 
     bool Is8Scratch() {

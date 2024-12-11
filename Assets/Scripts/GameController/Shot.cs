@@ -15,8 +15,6 @@ public class Shot : GameState {
 
         game.StickController.gameObject.SetActive(true);
         game.StickController.Sensitivity = game.CurrentPlayerSensitivity;
-        Debug.Log($"setting {game.CurrentPlayer} sens to {game.CurrentPlayerSensitivity}");
-        Debug.Log($"{game.Player1Sensitivity}, {game.Player2Sensitivity}");
 
         game.ShotCamera.gameObject.SetActive(true);
 
@@ -55,18 +53,17 @@ public class Shot : GameState {
             game.ShotCamera.gameObject.SetActive(!isOverhead);
 
             if (isOverhead)
-                game.HintUI.SetHint(new string[] { "(C) - ショットカメラ" });
+                game.HintUI.SetHint(new string[] { "(C) - ショット" });
             else
                 game.HintUI.SetHint(new string[] { "(C) - オーバーヘッドカメラ" });
         }
 
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     void Unpaused() {
         game.StickController.Sensitivity = game.CurrentPlayerSensitivity;
-        Debug.Log($"setting {game.CurrentPlayer} sens to {game.CurrentPlayerSensitivity}");
     }
 
     void StickCollided(Collision collision, CueBall cueBall) {

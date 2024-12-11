@@ -170,6 +170,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfbbe95853aedf0468fd7352b479af4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stickMaterial: {fileID: 2100000, guid: 85a57ec9d628c894094dbbd7c45f31a9, type: 2}
+  ghostMaterial: {fileID: 2100000, guid: 28c058e3636cec44a9d679fe6e919cd2, type: 2}
+  OriginalPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &7881492710989252085
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +218,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab34b8ed885ecb44b9108ca2ee1605b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  Target: {fileID: 0}
   camera: {fileID: 0}
-  sensitivity: 2
+  Sensitivity: 0

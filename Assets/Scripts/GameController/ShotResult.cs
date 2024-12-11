@@ -5,14 +5,18 @@ public class ShotResult : GameState {
     List<Ball> pocketedNow;
     List<Ball> cushionBalls;
     Ball firstTouched;
+    bool ballOut;
+    bool changeTurn = false;
+
     CallInfo? call;
 
     GameState next;
 
-    public ShotResult(GameController game, List<Ball> pocketedNow, List<Ball> cushionBalls, Ball firstTouched, CallInfo? call=null) : base(game) {
+    public ShotResult(GameController game, List<Ball> pocketedNow, List<Ball> cushionBalls, Ball firstTouched, bool ballOut, CallInfo? call=null) : base(game) {
         this.pocketedNow = pocketedNow;
         this.cushionBalls = cushionBalls;
         this.firstTouched = firstTouched;
+        this.ballOut = ballOut;
         this.call = call;
     }
 
@@ -23,6 +27,8 @@ public class ShotResult : GameState {
         Cursor.visible = true;
 
         game.TurnUI.Visible = true;
+        game.TurnUI.OptionHint.visible = true;
+        game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
 
         game.ShotResultUI.Refresh();
         game.ShotResultUI.Visible = true;
@@ -38,7 +44,11 @@ public class ShotResult : GameState {
     }
 
     void CalculateResults() {
-        game.ShotResultUI.Results.Add($"ボールが{pocketedNow.Count}個ポケットしました。");
+        int pocketed = pocketedNow.Count;
+        if (pocketedNow.Contains(game.CueBall.GetComponent<Ball>()) && pocketed > 0)
+            pocketed--;
+
+        game.ShotResultUI.Results.Add($"ボールが{pocketed}個ポケットしました。");
 
         if (Is8Scratch()) {
             game.ShotResultUI.Results.Add($"エイトボールスクラッチしました。");
@@ -49,16 +59,27 @@ public class ShotResult : GameState {
             else
                 winner = Players.PLAYER1;
 
-            game.EndGame(winner);
+            game.Winner = winner;
+            next = new End(game);
+            return;
+        }
+
+        if (ballOut) {
+            game.ShotResultUI.Results.Add("場外スクラッチしました。");
+            game.ShotResultUI.Results.Add("ターンが交代します。");
+            game.ShotResultUI.Results.Add("フリーボールです。");
+
+            changeTurn = true;
+            next = new Free(game);
             return;
         }
 
         if (IsCueScratch()) {
-            game.ShotResultUI.Results.Add("キュースクラッチしました。");
+            game.ShotResultUI.Results.Add("手球スクラッチしました。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
             game.ShotResultUI.Results.Add("フリーボールです。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Free(game);
             return;
         }
@@ -68,7 +89,7 @@ public class ShotResult : GameState {
             game.ShotResultUI.Results.Add("ターンが交代します。");
             game.ShotResultUI.Results.Add("フリーボールです。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Free(game);
             return;
         }
@@ -78,7 +99,7 @@ public class ShotResult : GameState {
             game.ShotResultUI.Results.Add("ターンが交代します。");
             game.ShotResultUI.Results.Add("フリーボールです。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Free(game);
             return;
         }
@@ -87,7 +108,7 @@ public class ShotResult : GameState {
             game.ShotResultUI.Results.Add("ボールが1個もポケットできませんでした。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
 
             if (game.IsOpen)
                 next = new Shot(game);
@@ -101,7 +122,7 @@ public class ShotResult : GameState {
             game.ShotResultUI.Results.Add("グループの相違でポケットしました。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
 
             if (game.IsOpen)
                 next = new Shot(game);
@@ -115,7 +136,7 @@ public class ShotResult : GameState {
             game.ShotResultUI.Results.Add("セーフティでした。");
             game.ShotResultUI.Results.Add("ターンが交代します。");
 
-            game.ChangeTurn();
+            changeTurn = true;
             next = new Call(game);
             return;
         }
@@ -134,17 +155,23 @@ public class ShotResult : GameState {
 
         game.ShotResultUI.Results.Add("ターンが交代します。");
 
-        game.ChangeTurn();
+        changeTurn = true;
         next = new Shot(game);
     }
 
     public override void Update() {
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     public void Confirm() {
         game.State = next;
+
+        if (changeTurn)
+            game.ChangeTurn();
+
+        if (next is End)
+            game.EndGame();
     }
 
     bool Is8Scratch() {

@@ -49,7 +49,7 @@ public class Settings : GameState {
         game.Player1Sensitivity = game.SettingsUI.Player1.value;
         game.Player2Sensitivity = game.SettingsUI.Player2.value;
 
-        game.IsPaused = false;
+        game.Unpause();
     }
 
     public void Reset() {

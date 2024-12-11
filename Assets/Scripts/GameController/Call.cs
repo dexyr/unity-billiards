@@ -38,10 +38,12 @@ public class Call : GameState {
         Cursor.visible = true;
 
         game.CallUI.Visible = true;
+        game.CallUI.Safety.visible = !game.IsEightShot;
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
 
         game.TurnUI.Visible = true;
+        game.TurnUI.Refresh(game.CurrentPlayer, game.CurrentGroup);
         game.HintUI.Visible = true;
 
         game.TurnUI.OptionHint.visible = true;
@@ -58,6 +60,7 @@ public class Call : GameState {
         game.TargetCamera.gameObject.SetActive(false);
 
         game.CallUI.Visible = false;
+        game.CallUI.Safety.visible = false;
         game.CallUI.Reset.visible = false;
         game.CallUI.Call.visible = false;
 
@@ -97,7 +100,7 @@ public class Call : GameState {
         }
 
         if (Input.GetKeyDown(KeyCode.O))
-            game.IsPaused = true;
+            game.Pause(new Settings(game));
     }
 
     void ChangeCamera() {
@@ -192,7 +195,9 @@ public class Call : GameState {
                 if (!b)
                     continue;
 
-                if (Ball.GetGroup(b.number) == validGroup)
+                var group = Ball.GetGroup(b.number);
+
+                if (group == validGroup || (game.IsEightShot && group == Ball.Group.EIGHT))
                     balls.Add(b);
             }
 
